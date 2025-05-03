@@ -1,11 +1,15 @@
 "use client"
 
 import React, { useState, useEffect, useRef } from 'react';
+import { useButtonHover } from "@/context/HoverContext"; // Import the hook
 
 const EyeballI: React.FC = () => {
   const eyeContainerRef = useRef<HTMLSpanElement>(null);
   const [innerEyeTransform, setInnerEyeTransform] = useState('translate(-50%, -50%)'); // For iris/pupil movement
   const [isBlinking, setIsBlinking] = useState(false);
+  
+  // Use the button hover context
+  const { isButtonHovered } = useButtonHover();
 
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {
@@ -63,17 +67,22 @@ const EyeballI: React.FC = () => {
     cursor: 'pointer',
   };
 
+  // Define normal and squint heights
+  const normalHeight = '70%';
+  const squintHeight = '15%';
+  const blinkHeight = '10%'; // Even more squinted for blink
+
   // Styles for the iris (now rectangular white part)
   const irisStyle: React.CSSProperties = {
     position: 'absolute',
     top: '50%',
     left: '50%',
     width: '100%', // Fill container width
-    height: '70%', // Make it rectangular (adjust % as needed)
+    height: isBlinking ? blinkHeight : isButtonHovered ? squintHeight : normalHeight, // Priority: blink > hover > normal
     backgroundColor: 'white',
     // borderRadius: '50%', // Removed for rectangular shape
     transform: innerEyeTransform, 
-    transition: 'transform 0.05s ease-out, height 0.075s ease-in-out', 
+    transition: 'transform 0.05s ease-out, height 0.1s ease-in-out', 
     boxShadow: 'inset 0 0 1px rgba(0,0,0,0.4)', // Adjusted shadow slightly
   };
 
@@ -89,12 +98,6 @@ const EyeballI: React.FC = () => {
     transform: 'translate(-50%, -50%)', // Center within the iris
     // No separate transition needed, moves with iris
   };
-
-  // Modify iris height for blinking
-  if (isBlinking) {
-    irisStyle.height = '15%'; // Adjust blink height for rectangle
-    irisStyle.transition = 'transform 0.05s ease-out, height 0.075s ease-in-out';
-  }
 
   return (
     <span 

@@ -8,6 +8,8 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils"
 import SvgFilters from "@/components/svg-filters"
 import LoadingScreen from "@/components/loading-screen"
+import { Toaster } from "@/components/ui/toaster"
+import { HoverProvider } from "@/context/HoverContext"
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist" })
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" })
@@ -28,9 +30,12 @@ export default function RootLayout({
     <html lang="en" className="scroll-smooth" suppressHydrationWarning>
       <body className={cn("min-h-screen antialiased font-outfit", outfit.variable, geist.variable, syne.variable)} suppressHydrationWarning>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <SvgFilters />
-          <LoadingScreen />
-          {children}
+          <HoverProvider>
+            <SvgFilters />
+            <LoadingScreen />
+            {children}
+            <Toaster />
+          </HoverProvider>
         </ThemeProvider>
       </body>
     </html>

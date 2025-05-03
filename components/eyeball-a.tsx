@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState, useEffect, useRef } from 'react';
+import { useButtonHover } from "@/context/HoverContext"; // Import the hook
 
 // Renamed component
 const EyeballA: React.FC = () => {
@@ -9,7 +10,12 @@ const EyeballA: React.FC = () => {
   const ellipseRef = useRef<SVGEllipseElement>(null);
   const [pupilTransform, setPupilTransform] = useState('');
   const [isBlinking, setIsBlinking] = useState(false);
-  const [ellipseRy, setEllipseRy] = useState(15);
+
+  // Consume the hover state from context
+  const { isButtonHovered } = useButtonHover();
+
+  // Log the received state
+  console.log('EyeballA - isButtonHovered:', isButtonHovered);
 
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {
@@ -55,12 +61,9 @@ const EyeballA: React.FC = () => {
   const handleBlink = () => {
     if (isBlinking) return;
     setIsBlinking(true);
-    setEllipseRy(3);
-    
     setTimeout(() => {
-      setEllipseRy(15);
       setIsBlinking(false);
-    }, 150); // Blink duration
+    }, 150);
   };
 
   // Define SVG size and alignment to match text
@@ -69,9 +72,14 @@ const EyeballA: React.FC = () => {
     width: '1.1em', // Adjust width to roughly match 'a'
     height: '1em', // Match line height
     verticalAlign: '-0.15em', // Adjust vertical alignment
-    cursor: 'pointer',
     overflow: 'visible', // Allow pupil slight movement outside strict triangle
+    cursor: 'pointer', // Show pointer cursor
   };
+
+  // Define ry values for normal and squinted states
+  const normalRy = 15;
+  const squintRy = 5; // Adjust squint level as needed
+  const blinkRy = 2; // Even more squinted for blinking
 
   return (
     <svg 
@@ -94,10 +102,10 @@ const EyeballA: React.FC = () => {
         cx="50" 
         cy="60" // Positioned lower in the triangle
         rx="30" // Horizontal radius
-        ry={ellipseRy}
+        ry={isBlinking ? blinkRy : isButtonHovered ? squintRy : normalRy}
         fill="white"
         style={{
-          transition: 'ry 0.075s ease-in-out'
+          transition: 'ry 0.1s ease-in-out'
         }}
       />
       {/* Pupil (black circle) */}
