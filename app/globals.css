@@ -1,0 +1,277 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Light Theme (Default) */
+  :root {
+    --background: 0 0% 100%; /* White */
+    --foreground: 0 0% 3.9%; /* Near Black */
+    --card: 0 0% 100%; /* White */
+    --card-foreground: 0 0% 3.9%; /* Near Black */
+    --popover: 0 0% 100%; /* White */
+    --popover-foreground: 0 0% 3.9%; /* Near Black */
+    --primary: 0 0% 9%; /* Near Black */
+    --primary-foreground: 0 0% 98%; /* Near White */
+    --secondary: 0 0% 96.1%; /* Light Grey */
+    --secondary-foreground: 0 0% 9%; /* Near Black */
+    --muted: 0 0% 96.1%; /* Light Grey */
+    --muted-foreground: 0 0% 45.1%; /* Mid Grey */
+    --accent: 0 0% 96.1%; /* Light Grey */
+    --accent-foreground: 0 0% 9%; /* Near Black */
+    --destructive: 0 84.2% 60.2%; /* Red */
+    --destructive-foreground: 0 0% 98%; /* Near White */
+    --border: 0 0% 89.8%; /* Light Border */
+    --input: 0 0% 89.8%; /* Light Border */
+    --ring: 0 0% 3.9%; /* Near Black */
+    --radius: 0.5rem; /* Slightly less rounded */
+  }
+
+  /* Dark Theme */
+  .dark {
+    --background: 0 0% 3.9%; /* Near Black */
+    --foreground: 0 0% 98%; /* Near White */
+    --card: 0 0% 3.9%; /* Near Black */
+    --card-foreground: 0 0% 98%; /* Near White */
+    --popover: 0 0% 3.9%; /* Near Black */
+    --popover-foreground: 0 0% 98%; /* Near White */
+    --primary: 0 0% 98%; /* Near White */
+    --primary-foreground: 0 0% 9%; /* Near Black */
+    --secondary: 0 0% 14.9%; /* Dark Grey */
+    --secondary-foreground: 0 0% 98%; /* Near White */
+    --muted: 0 0% 14.9%; /* Dark Grey */
+    --muted-foreground: 0 0% 63.9%; /* Mid Grey */
+    --accent: 0 0% 14.9%; /* Dark Grey */
+    --accent-foreground: 0 0% 98%; /* Near White */
+    --destructive: 0 62.8% 30.6%; /* Dark Red */
+    --destructive-foreground: 0 0% 98%; /* Near White */
+    --border: 0 0% 14.9%; /* Dark Border */
+    --input: 0 0% 14.9%; /* Dark Border */
+    --ring: 0 0% 83.1%; /* Light Grey for Ring */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    /* Remove complex gradient background */
+    /* background: linear-gradient(...) */
+    background-attachment: fixed; /* Keep this if needed for other bg effects */
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-syne font-bold text-foreground;
+    /* Adjust text shadow for better contrast in both themes */
+    text-shadow: 0 1px 1px hsl(var(--background) / 0.4);
+  }
+  
+  p {
+    @apply text-foreground/90;
+    text-shadow: 0 1px 1px hsl(var(--background) / 0.3);
+  }
+}
+
+@layer components {
+  /* Simplify component styles to rely more on base variables */
+  .text-content-wrapper {
+    @apply rounded-xl p-6 bg-card/80 border border-border shadow-lg backdrop-blur-sm;
+    /* Adjust transparency/blur as needed */
+  }
+
+  .gradient-text {
+    /* Revert to a simpler text style or remove if not used */
+    @apply font-bold text-primary;
+    /* Or define gradients specific to light/dark if needed */
+  }
+
+  .gradient-text-alt {
+     /* Revert to a simpler text style or remove if not used */
+    @apply font-bold text-secondary-foreground;
+  }
+
+  /* Simplify button, rely on variants from button.tsx which use CSS vars */
+  .modern-button {
+    @apply transition-transform duration-200 hover:-translate-y-0.5 active:scale-[0.98];
+    /* Remove specific bg/text color overrides */
+  }
+  .modern-button::after {
+     content: none; /* Remove pseudo-element hover effect */
+  }
+
+  /* Simplify card styles */
+  .feature-card {
+    @apply bg-card backdrop-blur-sm text-card-foreground 
+           border border-border
+           shadow-md transition-all duration-300 rounded-xl
+           hover:shadow-lg hover:border-primary/50 hover:-translate-y-1;
+  }
+
+  .modern-input {
+    @apply bg-input border border-border 
+           text-foreground rounded-md focus:border-primary 
+           focus:ring-1 focus:ring-ring focus:outline-none;
+  }
+
+  .star {
+    color: hsl(var(--primary));
+    /* Keep pulse or simplify/remove */
+     animation: pulse 3s infinite ease-in-out;
+  }
+
+  /* Project card using blended background, --border, --primary shadow */
+  .project-card {
+    @apply relative overflow-hidden rounded-xl transition-all duration-300 ease-out /* Smoother ease */
+           bg-card/80 
+           hover:shadow-lg hover:shadow-primary/15 
+           hover:-translate-y-0.5 hover:scale-[1.02] /* Smaller lift, slight scale */
+           backdrop-blur-sm
+           border border-border;
+  }
+
+  .nav-pill {
+    @apply px-4 py-2 rounded-full bg-background/80 backdrop-blur-md
+           flex items-center gap-3 border border-border
+           shadow-sm;
+  }
+
+  .nav-link {
+    @apply text-muted-foreground hover:text-primary transition-colors duration-200
+           relative font-medium;
+  }
+
+  .nav-link::after {
+    content: '';
+    @apply absolute -bottom-1 left-0 h-0.5 w-0 bg-primary
+           transition-all duration-300 opacity-0;
+  }
+
+  .nav-link:hover::after,
+  .nav-link.active::after {
+    @apply w-full opacity-100;
+  }
+
+  .nav-link.active {
+    @apply text-primary;
+  }
+
+  /* Badge styles should work fine as they use CSS vars */
+  .badge {
+    @apply inline-flex items-center justify-center px-2 py-0.5 rounded-md text-xs font-medium border;
+  }
+
+  .badge-primary {
+    @apply bg-primary/10 text-primary border-primary/20;
+  }
+
+  .badge-secondary {
+    @apply bg-secondary/10 text-secondary-foreground border-secondary/20;
+  }
+
+  .glass-card {
+    @apply rounded-xl backdrop-blur-sm border border-border/50
+          bg-card/60 text-foreground shadow-md transition-all duration-300
+          hover:shadow-lg hover:bg-card/75 hover:border-border/80;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--background) / 0.5);
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.4);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.6);
+}
+
+/* Text reveal */
+.reveal-text::before {
+  color: hsl(var(--foreground));
+  /* Keep animation or simplify */
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Other styles like scroll animations, parallax, noise, grid, headings, etc. */
+/* Review these and simplify/remove if they clash with the B&W theme */
+
+/* Example: Simplify noise or remove */
+.noise {
+  opacity: 0.015;
+  /* Or display: none; */
+}
+
+/* Example: Adjust grid color */
+.bg-grid-white {
+   background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cline x1='0' y1='100' x2='100' y2='100' stroke='hsl(var(--foreground))' stroke-opacity='0.05' stroke-width='1'/%3E%3Cline x1='100' y1='0' x2='100' y2='100' stroke='hsl(var(--foreground))' stroke-opacity='0.05' stroke-width='1'/%3E%3C/svg%3E");
+}
+
+/* Simplify glow */
+.glow:hover {
+  filter: drop-shadow(0 0 6px hsl(var(--primary) / 0.3));
+}
+
+/* Adjust loading dots */
+.loading-dot {
+  @apply bg-primary;
+}
+
+/* Remove specific button hover slide effect if using standard button component hover */
+.btn-hover-slide::after {
+  content: none;
+}
+
+/* Adjust shimmer for dark/light */
+.shimmer {
+  background: linear-gradient(
+    to right,
+    hsl(var(--muted) / 0.1) 8%,
+    hsl(var(--muted) / 0.2) 18%,
+    hsl(var(--muted) / 0.1) 33%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Styles for Skill Chips in Expertise Section */
+.skill-chip {
+  @apply inline-block px-2.5 py-1 mr-1.5 mb-1.5 rounded-full text-xs font-medium;
+  @apply bg-primary/10 text-primary border border-primary/20;
+  @apply transition-colors duration-300; /* For smooth theme changes */
+}
+/* Optional: slightly different hover/active */
+.skill-chip:hover {
+   @apply bg-primary/20;
+}
+
+/* Add this at the end of the file */
+.cursor-hidden {
+  cursor: none !important;
+}
+
+.cursor-hidden * {
+  cursor: none !important;
+}
+
+/* Exception for input fields and textareas */
+.cursor-hidden input,
+.cursor-hidden textarea,
+.cursor-hidden [contenteditable="true"] {
+  cursor: text !important;
+}
+
+/* Exception for select elements */
+.cursor-hidden select {
+  cursor: pointer !important;
+}
