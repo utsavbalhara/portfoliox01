@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
 import { ArrowRightIcon } from "lucide-react"
+import EyeballA from "./eyeball-a"
 
 export default function HeroSection() {
   const heroVariants = {
@@ -49,9 +50,9 @@ export default function HeroSection() {
               className="text-5xl sm:text-6xl md:text-7xl font-bold mb-6 leading-tight"
               variants={itemVariants}
             >
-              <span className="inline-block mb-2">Hi. I'm <span className="gradient-text">Aryaman</span>.</span>
-              <br />
-              <span className="inline-block">A Developer.</span>
+              <span className="inline-block gradient-text">
+                Aryam<EyeballA />n Jaiswal.
+              </span>
             </motion.h1>
 
             <motion.p 
