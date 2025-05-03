@@ -270,43 +270,57 @@
 
 /* Add this at the end of the file */
 .cursor-hidden {
-  cursor: none !important;
+  cursor: none;
 }
 
 .cursor-hidden * {
-  cursor: none !important;
+  cursor: none;
 }
 
-/* Exception for input fields and textareas */
 .cursor-hidden input,
+.cursor-hidden button,
+.cursor-hidden a,
 .cursor-hidden textarea,
-.cursor-hidden [contenteditable="true"] {
-  cursor: text !important;
-}
-
-/* Exception for select elements */
 .cursor-hidden select {
-  cursor: pointer !important;
+  cursor: none;
 }
 
-/* Center-fill animation for buttons */
+.cursor-hidden select {
+  cursor: none;
+}
+
+/* Hollow button with SLOW center-fill animation */
 .fill-center-button {
-  @apply relative overflow-hidden border border-primary text-primary bg-transparent transition-colors duration-700 ease-in-out;
+  @apply relative overflow-hidden border border-primary text-primary bg-transparent transition-colors duration-500 ease-out;
+  /* Default: transparent bg, primary border/text, slow text transition */
   z-index: 1;
 }
 
 .fill-center-button::before {
   content: '';
-  @apply absolute top-1/2 left-1/2 w-0 h-0 rounded-full bg-primary transition-all duration-700 ease-in-out;
-  transform: translate(-50%, -50%) scale(0);
+  @apply absolute top-1/2 left-1/2 w-0 h-0 rounded-full bg-primary transition-all duration-700 ease-out;
+  /* Start as 0x0 circle at center, use primary bg, slow transition */
+  transform: translate(-50%, -50%); 
   z-index: -1;
 }
 
 .fill-center-button:hover {
-  @apply text-primary-foreground; /* Ensure text color changes */
+  @apply text-primary-foreground;
+  /* Text changes color over the slower duration */
+  /* Border color remains primary */
 }
 
 .fill-center-button:hover::before {
-  @apply w-[225%] h-[225%]; 
-  transform: translate(-50%, -50%) scale(1);
+  @apply w-[225%] h-[225%]; /* Expand circle to cover */
+  /* Scale is handled by width/height transition */
 }
+
+/* Tacky/Edgy Scroll-to-Top Button Animation - REMOVED */
+/*
+.tacky-scroll-top { ... }
+.tacky-scroll-top::before { ... }
+.tacky-scroll-top:hover { ... }
+.tacky-scroll-top:hover::before { ... }
+*/
+
+/* Cursor Trail Effects - Removed ... */

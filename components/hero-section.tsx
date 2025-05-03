@@ -31,6 +31,9 @@ export default function HeroSection() {
 
   return (
     <section id="home" className="relative min-h-[90vh] flex items-center justify-center scroll-section pb-16">
+      {/* Cursor trail effect only on hero section */}
+      {/* <CursorTrail /> */}
+      
       {/* Decorative elements OUTSIDE container (optional, if needed) */}
       {/* <div className="absolute ..."></div> */}
 
