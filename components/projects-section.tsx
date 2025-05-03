@@ -157,9 +157,9 @@ export default function ProjectsSection() {
                   <p className="text-muted-foreground mb-6 flex-grow">{project.description}</p>
 
                   <div className="flex gap-3 mt-auto">
-                    <Button 
-                      size="sm" 
-                      className="modern-button !py-1.5 !px-3 text-sm bg-primary/10 hover:bg-primary/20 text-primary flex items-center gap-1.5"
+                    <Button
+                      size="sm"
+                      className="fill-center-button !py-1.5 !px-3 text-sm flex items-center gap-1.5"
                       asChild
                     >
                       <a href={project.liveUrl} target="_blank" rel="noopener noreferrer">
@@ -167,9 +167,9 @@ export default function ProjectsSection() {
                         Demo
                       </a>
                     </Button>
-                    <Button 
-                      size="sm" 
-                      className="modern-button !py-1.5 !px-3 text-sm bg-primary/10 hover:bg-primary/20 text-primary flex items-center gap-1.5"
+                    <Button
+                      size="sm"
+                      className="fill-center-button !py-1.5 !px-3 text-sm flex items-center gap-1.5"
                       asChild
                     >
                       <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
@@ -184,12 +184,12 @@ export default function ProjectsSection() {
           ))}
         </motion.div>
 
-        <motion.div 
+        <motion.div
           variants={itemVariants}
           className="text-center mt-16"
         >
-          <Button 
-            className="modern-button group"
+          <Button
+            className="fill-center-button group"
             asChild
           >
             <a href="#" className="flex items-center">

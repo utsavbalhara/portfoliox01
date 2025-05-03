@@ -208,12 +208,12 @@ export default function ContactSection() {
                 </div>
 
                 <div>
-                  <Button 
-                    type="submit" 
-                    className="modern-button w-full group font-medium"
+                  <Button
+                    type="submit"
+                    className="fill-center-button w-full group font-medium"
+                    onClick={handleSubmit}
                   >
-                    <Send className="h-4 w-4 mr-2 group-hover:translate-x-1 transition-transform" />
-                    Send Message
+                    Send Message <Send className="ml-2 h-4 w-4" />
                   </Button>
                 </div>
               </div>

@@ -95,11 +95,24 @@
 
   /* Simplify button, rely on variants from button.tsx which use CSS vars */
   .modern-button {
-    @apply transition-transform duration-200 hover:-translate-y-0.5 active:scale-[0.98];
-    /* Remove specific bg/text color overrides */
+    @apply relative overflow-hidden border border-primary text-primary bg-transparent transition-colors duration-700 ease-in-out;
+    z-index: 1; /* Ensure button content is initially above pseudo-element */
   }
-  .modern-button::after {
-     content: none; /* Remove pseudo-element hover effect */
+
+  .modern-button::before {
+    content: '';
+    @apply absolute top-1/2 left-1/2 w-0 h-0 rounded-full bg-primary transition-all duration-700 ease-in-out;
+    transform: translate(-50%, -50%) scale(0);
+    z-index: -1; /* Position behind the text */
+  }
+
+  .modern-button:hover {
+    @apply text-primary-foreground; /* Change text color on hover */
+  }
+
+  .modern-button:hover::before {
+    @apply w-[225%] h-[225%]; /* Make slightly larger than needed to ensure full cover */
+    transform: translate(-50%, -50%) scale(1);
   }
 
   /* Simplify card styles */
@@ -274,4 +287,26 @@
 /* Exception for select elements */
 .cursor-hidden select {
   cursor: pointer !important;
+}
+
+/* Center-fill animation for buttons */
+.fill-center-button {
+  @apply relative overflow-hidden border border-primary text-primary bg-transparent transition-colors duration-700 ease-in-out;
+  z-index: 1;
+}
+
+.fill-center-button::before {
+  content: '';
+  @apply absolute top-1/2 left-1/2 w-0 h-0 rounded-full bg-primary transition-all duration-700 ease-in-out;
+  transform: translate(-50%, -50%) scale(0);
+  z-index: -1;
+}
+
+.fill-center-button:hover {
+  @apply text-primary-foreground; /* Ensure text color changes */
+}
+
+.fill-center-button:hover::before {
+  @apply w-[225%] h-[225%]; 
+  transform: translate(-50%, -50%) scale(1);
 }

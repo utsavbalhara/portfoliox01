@@ -65,13 +65,21 @@ export default function HeroSection() {
               className="flex flex-col sm:flex-row items-center justify-center gap-6"
               variants={itemVariants}
             >
-              <Button 
+              <Button
                 asChild
-                className="modern-button group text-lg"
+                className="fill-center-button group text-lg"
               >
                 <a href="#projects">
                   View My Work
                   <ArrowRightIcon className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                </a>
+              </Button>
+              <Button
+                asChild
+                className="fill-center-button group text-lg"
+              >
+                <a href="/Aryaman_Jaiswal_Resume.pdf" download="Aryaman_Jaiswal_Resume.pdf" target="_blank" rel="noopener noreferrer">
+                  Resume
                 </a>
               </Button>
             </motion.div>
