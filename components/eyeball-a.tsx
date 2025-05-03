@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useButtonHover } from "@/context/HoverContext"; // Import the hook
+import { useTheme } from "next-themes"; // Import theme hook
 
 // Renamed component
 const EyeballA: React.FC = () => {
@@ -10,6 +11,13 @@ const EyeballA: React.FC = () => {
   const ellipseRef = useRef<SVGEllipseElement>(null);
   const [pupilTransform, setPupilTransform] = useState('');
   const [isBlinking, setIsBlinking] = useState(false);
+  const { resolvedTheme } = useTheme(); // Get current theme
+  const [mounted, setMounted] = useState(false);
+
+  // Mount check to avoid hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Consume the hover state from context
   const { isButtonHovered } = useButtonHover();
@@ -80,6 +88,18 @@ const EyeballA: React.FC = () => {
   const normalRy = 15;
   const squintRy = 5; // Adjust squint level as needed
   const blinkRy = 2; // Even more squinted for blinking
+  
+  // Set theme-specific colors
+  const isDark = mounted && resolvedTheme === 'dark';
+  const strokeColor = 'currentColor'; // Use text color from parent
+  const whiteColor = isDark ? 'white' : '#f8f8f8'; // Slightly off-white in light mode
+  const blackColor = isDark ? 'black' : '#222222'; // Slightly lighter black in light mode
+  const strokeWidth = isDark ? 8 : 6; // Thinner stroke in light mode for better appearance
+
+  if (!mounted) {
+    // Return a placeholder with same dimensions to avoid layout shift
+    return <svg style={svgStyle} aria-hidden="true"></svg>;
+  }
 
   return (
     <svg 
@@ -93,8 +113,8 @@ const EyeballA: React.FC = () => {
       <polygon 
         points="50,10 95,90 5,90" // Adjust points for desired triangle shape
         fill="none"
-        stroke="currentColor" // Use text color
-        strokeWidth="8" // Adjust thickness
+        stroke={strokeColor}
+        strokeWidth={strokeWidth}
       />
       {/* Inner Eye Shape (white fill) - simplified ellipse */}
       <ellipse 
@@ -103,7 +123,7 @@ const EyeballA: React.FC = () => {
         cy="60" // Positioned lower in the triangle
         rx="30" // Horizontal radius
         ry={isBlinking ? blinkRy : isButtonHovered ? squintRy : normalRy}
-        fill="white"
+        fill={whiteColor}
         style={{
           transition: 'ry 0.1s ease-in-out'
         }}
@@ -114,7 +134,7 @@ const EyeballA: React.FC = () => {
         cx="50" 
         cy="60" // Initial center same as eye ellipse
         r="8" // Pupil radius
-        fill="black"
+        fill={blackColor}
         style={{
           transform: pupilTransform,
           transition: 'transform 0.05s ease-out'

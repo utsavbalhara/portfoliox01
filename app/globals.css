@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 @layer base {
-  /* Light Theme (Default) */
+  /* Light Theme (Optimized) */
   :root {
     --background: 0 0% 100%; /* White */
     --foreground: 0 0% 3.9%; /* Near Black */
@@ -16,13 +16,13 @@
     --secondary: 0 0% 96.1%; /* Light Grey */
     --secondary-foreground: 0 0% 9%; /* Near Black */
     --muted: 0 0% 96.1%; /* Light Grey */
-    --muted-foreground: 0 0% 45.1%; /* Mid Grey */
+    --muted-foreground: 0 0% 40%; /* Slightly darker Mid Grey for better contrast */
     --accent: 0 0% 96.1%; /* Light Grey */
     --accent-foreground: 0 0% 9%; /* Near Black */
-    --destructive: 0 84.2% 60.2%; /* Red */
+    --destructive: 0 84.2% 55%; /* Slightly darker Red for better contrast */
     --destructive-foreground: 0 0% 98%; /* Near White */
-    --border: 0 0% 89.8%; /* Light Border */
-    --input: 0 0% 89.8%; /* Light Border */
+    --border: 0 0% 84%; /* Slightly darker border for better visibility */
+    --input: 0 0% 84%; /* Slightly darker border for better visibility */
     --ring: 0 0% 3.9%; /* Near Black */
     --radius: 0.5rem; /* Slightly less rounded */
   }
@@ -191,9 +191,9 @@
   }
 }
 
-/* Custom Scrollbar */
+/* Custom Scrollbar - Enhanced for light mode */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 8px; /* Slightly wider for better visibility */
 }
 
 ::-webkit-scrollbar-track {
@@ -201,38 +201,34 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted-foreground) / 0.4);
+  background: hsl(var(--muted-foreground) / 0.5); /* Higher opacity */
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--muted-foreground) / 0.6);
+  background: hsl(var(--muted-foreground) / 0.7); /* Higher opacity on hover */
 }
 
 /* Text reveal */
 .reveal-text::before {
   color: hsl(var(--foreground));
-  /* Keep animation or simplify */
   transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Other styles like scroll animations, parallax, noise, grid, headings, etc. */
-/* Review these and simplify/remove if they clash with the B&W theme */
-
-/* Example: Simplify noise or remove */
+/* Noise effect - lighter in light mode, darker in dark mode */
 .noise {
-  opacity: 0.015;
-  /* Or display: none; */
+  opacity: 0.02;
+  mix-blend-mode: difference;
 }
 
-/* Example: Adjust grid color */
+/* Adjust grid color for better visibility in light mode */
 .bg-grid-white {
-   background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cline x1='0' y1='100' x2='100' y2='100' stroke='hsl(var(--foreground))' stroke-opacity='0.05' stroke-width='1'/%3E%3Cline x1='100' y1='0' x2='100' y2='100' stroke='hsl(var(--foreground))' stroke-opacity='0.05' stroke-width='1'/%3E%3C/svg%3E");
+   background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cline x1='0' y1='100' x2='100' y2='100' stroke='hsl(var(--foreground))' stroke-opacity='0.08' stroke-width='1'/%3E%3Cline x1='100' y1='0' x2='100' y2='100' stroke='hsl(var(--foreground))' stroke-opacity='0.08' stroke-width='1'/%3E%3C/svg%3E");
 }
 
-/* Simplify glow */
+/* Enhanced glow for light mode */
 .glow:hover {
-  filter: drop-shadow(0 0 6px hsl(var(--primary) / 0.3));
+  filter: drop-shadow(0 0 8px hsl(var(--primary) / 0.4));
 }
 
 /* Adjust loading dots */
@@ -240,53 +236,43 @@
   @apply bg-primary;
 }
 
-/* Remove specific button hover slide effect if using standard button component hover */
-.btn-hover-slide::after {
-  content: none;
+/* Glass effect - enhanced for light mode */
+.glass-effect {
+  @apply backdrop-blur-md bg-background/60 dark:bg-background/40 border-border/50;
+  box-shadow: 0 4px 32px -8px rgba(0, 0, 0, 0.1);
 }
 
-/* Adjust shimmer for dark/light */
-.shimmer {
-  background: linear-gradient(
-    to right,
-    hsl(var(--muted) / 0.1) 8%,
-    hsl(var(--muted) / 0.2) 18%,
-    hsl(var(--muted) / 0.1) 33%
-  );
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
+/* Light mode specific optimizations */
+@media (prefers-color-scheme: light) {
+  .glass-card {
+    box-shadow: 0 4px 24px -8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Additional light mode shadows for cards and elements */
+  .card-shadow {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  }
+  
+  /* Improved button hover effect for light mode */
+  button:hover, 
+  a:hover {
+    filter: brightness(0.95);
+  }
 }
 
-/* Styles for Skill Chips in Expertise Section */
-.skill-chip {
-  @apply inline-block px-2.5 py-1 mr-1.5 mb-1.5 rounded-full text-xs font-medium;
-  @apply bg-primary/10 text-primary border border-primary/20;
-  @apply transition-colors duration-300; /* For smooth theme changes */
-}
-/* Optional: slightly different hover/active */
-.skill-chip:hover {
-   @apply bg-primary/20;
+/* For users who prefer reduced motion */
+@media (prefers-reduced-motion) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
-/* Add this at the end of the file */
+/* Hide default cursor when custom cursor is active */
 .cursor-hidden {
-  cursor: none;
-}
-
-.cursor-hidden * {
-  cursor: none;
-}
-
-.cursor-hidden input,
-.cursor-hidden button,
-.cursor-hidden a,
-.cursor-hidden textarea,
-.cursor-hidden select {
-  cursor: none;
-}
-
-.cursor-hidden select {
-  cursor: none;
+  cursor: none !important;
 }
 
 /* Hollow button with SLOW center-fill animation */

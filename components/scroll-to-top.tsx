@@ -3,10 +3,13 @@
 import { useEffect, useState, useRef } from "react"
 import { motion } from "framer-motion"
 import { useButtonHover } from "@/context/HoverContext"
+import { useTheme } from "next-themes"
 
 export default function ScrollToTop() {
   const [isVisible, setIsVisible] = useState(false)
   const [isBlinking, setIsBlinking] = useState(false)
+  const [mounted, setMounted] = useState(false)
+  const { resolvedTheme } = useTheme()
 
   const buttonRef = useRef<HTMLButtonElement>(null)
   const pupilRef = useRef<SVGCircleElement>(null)
@@ -15,7 +18,10 @@ export default function ScrollToTop() {
 
   const { isButtonHovered } = useButtonHover()
 
-  console.log('ScrollToTop - isButtonHovered:', isButtonHovered)
+  // Mount check
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {
@@ -118,9 +124,23 @@ export default function ScrollToTop() {
   const squintRy = 5
   const blinkRy = 2
 
+  // Theme-specific styling
+  const isDark = mounted && resolvedTheme === 'dark'
+  const strokeWidth = isDark ? 6 : 5 // Thinner stroke in light mode
+  const eyeColor = isDark ? 'hsl(var(--foreground))' : 'hsl(var(--foreground))'
+  const pupilColor = isDark ? 'hsl(var(--primary-foreground))' : 'hsl(var(--primary-foreground))'
+  const buttonClass = isDark ? 
+    "fixed bottom-8 right-8 w-12 h-12 z-[9999]" : 
+    "fixed bottom-8 right-8 w-12 h-12 z-[9999] shadow-md backdrop-blur-sm rounded-full"
+
+  if (!mounted) {
+    // Return a placeholder with the same size to avoid layout shift
+    return null
+  }
+
   return (
     <motion.div
-      className="fixed bottom-8 right-8 w-12 h-12 z-[9999]"
+      className={buttonClass}
       variants={buttonVariants}
       initial="hidden"
       animate={isVisible ? "visible" : "hidden"}
@@ -146,7 +166,7 @@ export default function ScrollToTop() {
             points="50,10 95,90 5,90"
             fill="none"
             stroke="currentColor"
-            strokeWidth="6"
+            strokeWidth={strokeWidth}
           />
           <ellipse 
             ref={ellipseRef}
@@ -154,7 +174,7 @@ export default function ScrollToTop() {
             cy="60"
             rx="25"
             ry={isBlinking ? blinkRy : isButtonHovered ? squintRy : normalRy}
-            fill="hsl(var(--foreground))"
+            fill={eyeColor}
             style={{
               transition: 'ry 0.1s ease-in-out'
             }}
@@ -164,7 +184,7 @@ export default function ScrollToTop() {
             cx="50"
             cy="60"
             r="8"
-            fill="hsl(var(--primary-foreground))"
+            fill={pupilColor}
             style={{
               transform: pupilTransform,
               transition: 'transform 0.05s ease-out, ry 0.1s ease-in-out'

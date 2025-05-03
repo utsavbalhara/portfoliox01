@@ -2,11 +2,19 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useButtonHover } from "@/context/HoverContext"; // Import the hook
+import { useTheme } from "next-themes"; // Import theme hook
 
 const EyeballI: React.FC = () => {
   const eyeContainerRef = useRef<HTMLSpanElement>(null);
   const [innerEyeTransform, setInnerEyeTransform] = useState('translate(-50%, -50%)'); // For iris/pupil movement
   const [isBlinking, setIsBlinking] = useState(false);
+  const { resolvedTheme } = useTheme(); // Get current theme
+  const [mounted, setMounted] = useState(false);
+  
+  // Mount check to avoid hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   
   // Use the button hover context
   const { isButtonHovered } = useButtonHover();
@@ -71,6 +79,12 @@ const EyeballI: React.FC = () => {
   const normalHeight = '70%';
   const squintHeight = '15%';
   const blinkHeight = '10%'; // Even more squinted for blink
+  
+  // Set theme-specific colors
+  const isDark = mounted && resolvedTheme === 'dark';
+  const whiteColor = isDark ? 'white' : '#f8f8f8'; // Slightly off-white in light mode
+  const blackColor = isDark ? 'black' : '#222222'; // Slightly lighter black in light mode
+  const boxShadow = isDark ? 'inset 0 0 1px rgba(0,0,0,0.4)' : 'inset 0 0 2px rgba(0,0,0,0.6)'; // Stronger shadow in light mode
 
   // Styles for the iris (now rectangular white part)
   const irisStyle: React.CSSProperties = {
@@ -79,11 +93,11 @@ const EyeballI: React.FC = () => {
     left: '50%',
     width: '100%', // Fill container width
     height: isBlinking ? blinkHeight : isButtonHovered ? squintHeight : normalHeight, // Priority: blink > hover > normal
-    backgroundColor: 'white',
+    backgroundColor: whiteColor,
     // borderRadius: '50%', // Removed for rectangular shape
     transform: innerEyeTransform, 
     transition: 'transform 0.05s ease-out, height 0.1s ease-in-out', 
-    boxShadow: 'inset 0 0 1px rgba(0,0,0,0.4)', // Adjusted shadow slightly
+    boxShadow: boxShadow, // Adjusted shadow for better visibility
   };
 
   // Styles for the pupil (black center)
@@ -93,11 +107,16 @@ const EyeballI: React.FC = () => {
     left: '50%',
     width: '40%', // Size relative to iris
     height: '40%',
-    backgroundColor: 'black',
+    backgroundColor: blackColor,
     borderRadius: '50%',
     transform: 'translate(-50%, -50%)', // Center within the iris
     // No separate transition needed, moves with iris
   };
+
+  if (!mounted) {
+    // Return a placeholder with same dimensions to avoid layout shift
+    return <span style={eyeContainerStyle} aria-hidden="true"></span>;
+  }
 
   return (
     <span 

@@ -82,25 +82,33 @@ export default function CustomCursor() {
   }
   
   // Define cursor colors based on theme
-  const dotColor = resolvedTheme === "dark" ? "#FFFFFF" : "#000000"
-  const ringColor = resolvedTheme === "dark" ? "border-white" : "border-black"
+  const isDarkMode = resolvedTheme === "dark"
+  
+  // Improved color and opacity for better light mode visibility
+  const dotColor = isDarkMode ? "#FFFFFF" : "#000000"
+  const dotOpacity = isDarkMode ? 1 : 0.85 // Higher opacity in light mode for visibility
+  const ringColor = isDarkMode ? "border-white" : "border-black"
+  const ringOpacity = isDarkMode ? 0.2 : 0.4 // Higher opacity in light mode for visibility
   
   // Styles for the main cursor dot, including triangle transformation
   const dotStyle = {
     height: isPointer ? '0px' : '8px',
     width: isPointer ? '0px' : '8px',
     backgroundColor: isPointer ? 'transparent' : dotColor,
+    opacity: dotOpacity,
     borderRadius: isPointer ? '0' : '9999px',
     borderLeft: isPointer ? '6px solid transparent' : '0px solid transparent', 
     borderRight: isPointer ? '6px solid transparent' : '0px solid transparent',
     borderBottom: isPointer ? `10px solid ${dotColor}` : '0px solid transparent',
+    // Add slight blur in light mode for better visibility
+    filter: !isDarkMode ? 'drop-shadow(0 0 1px rgba(0,0,0,0.5))' : 'none',
   };
 
   return (
     <>
       {/* Main cursor dot - Now transforms into a triangle */}
       <motion.div
-        className="fixed top-0 left-0 z-[100] pointer-events-none mix-blend-difference"
+        className="fixed top-0 left-0 z-[100] pointer-events-none"
         style={{
           x: cursorXSpring,
           y: cursorYSpring,
@@ -110,12 +118,11 @@ export default function CustomCursor() {
         }}
         animate={{
           scale: isHovering ? (isPointer ? 1.2 : 0.5) : 1,
-          opacity: isHovering ? 1 : 0.8,
+          opacity: isHovering ? (isDarkMode ? 1 : 0.9) : (isDarkMode ? 0.8 : 0.7),
         }}
         transition={{ duration: 0.15, type: "spring", stiffness: 500, damping: 30 }}
       >
         {/* Content removed as styling is handled by parent now */}
-        {/* <div className={`h-2 w-2 rounded-full ${dotColor}`}></div> */}
       </motion.div>
       
       {/* Cursor ring/circle - Behaviour remains the same */}
@@ -127,26 +134,20 @@ export default function CustomCursor() {
           y: cursorYSpring,
           translateX: "-50%",
           translateY: "-50%",
-          borderColor: resolvedTheme === "dark" ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'
+          borderColor: isDarkMode ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.35)'
         }}
         animate={{
           width: isPointer ? "40px" : "20px",
           height: isPointer ? "40px" : "20px",
-          opacity: 0.2,
+          opacity: ringOpacity,
           scale: isHovering ? 1.2 : 1,
-          borderWidth: "1px",
+          borderWidth: !isDarkMode ? "1.5px" : "1px", // Thicker border in light mode
         }}
         transition={{ 
           duration: 0.3,
           type: "spring", stiffness: 300, damping: 25
         }}
-      >
-        {/* Ring content can stay simple */}
-        {/* <div className={`w-full h-full rounded-full border ${ringColor} border-opacity-50 backdrop-blur-[2px]`} /> */}
-      </motion.div>
-      
-      {/* Removed Magnetic cursor trailers */}
-      {/* {Array.from({ length: 5 }).map((_, i) => (...) )} */}
+      />
     </>
   )
 }
