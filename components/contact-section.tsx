@@ -11,13 +11,13 @@ import { Mail, Phone, MapPin, Send, Github, Linkedin, Twitter, Instagram } from 
 
 // Reusable animation variant
 const scrollFadeUp = {
-  hidden: { opacity: 0, y: 30 },
+  hidden: { opacity: 0, y: 20 },
   visible: {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.7,
-      ease: [0.2, 0.65, 0.3, 0.9]
+      duration: 0.6,
+      ease: [0.16, 1, 0.3, 1]
     }
   }
 }
@@ -84,7 +84,7 @@ export default function ContactSection() {
     <section 
       id="contact" 
       ref={ref}
-      className="py-24 scroll-section section-padding relative overflow-hidden"
+      className="section-animate py-24 scroll-section section-padding relative overflow-hidden"
     >
       {/* Background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">

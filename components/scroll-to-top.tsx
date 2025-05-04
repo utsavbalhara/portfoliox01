@@ -106,18 +106,24 @@ export default function ScrollToTop() {
   }
 
   const buttonVariants = {
-    hidden: { opacity: 0, scale: 0.5, y: 50 },
-    visible: { 
-      opacity: 1, 
-      scale: 1, 
-      y: 0,
-      transition: { 
-        type: "spring",
-        stiffness: 300,
-        damping: 20,
-        duration: 0.3
-      } 
+    hidden: {
+      opacity: 0,
+      scale: 0.95,
+      y: 20,
+      transition: {
+        duration: 0.6,
+        ease: [0.16, 1, 0.3, 1]
+      }
     },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        ease: [0.16, 1, 0.3, 1]
+      }
+    }
   }
 
   const normalRy = 15
@@ -176,7 +182,7 @@ export default function ScrollToTop() {
             ry={isBlinking ? blinkRy : isButtonHovered ? squintRy : normalRy}
             fill={eyeColor}
             style={{
-              transition: 'ry 0.1s ease-in-out'
+              transition: 'ry 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
             }}
           />
           <circle 
@@ -187,7 +193,7 @@ export default function ScrollToTop() {
             fill={pupilColor}
             style={{
               transform: pupilTransform,
-              transition: 'transform 0.05s ease-out, ry 0.1s ease-in-out'
+              transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
             }}
           />
         </svg>

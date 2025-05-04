@@ -177,19 +177,19 @@ export default function BackgroundEffect() {
         }
       });
       
-      // Rotate particles slightly
-      particles.rotation.y += 0.0005;
-      particles.rotation.x += 0.0002;
+      // Rotate particles slightly with consistent speed
+      particles.rotation.y += 0.0003;
+      particles.rotation.x += 0.0003;
       
-      // Rotate grid based on mouse
+      // Rotate grid based on mouse with consistent easing
       targetX = mouseX * 0.3;
       targetY = mouseY * 0.2;
       
-      gridGroup.rotation.y += (targetX - gridGroup.rotation.y) * 0.02;
-      gridGroup.rotation.x += (targetY - gridGroup.rotation.x) * 0.02;
+      gridGroup.rotation.y += (targetX - gridGroup.rotation.y) * 0.05;
+      gridGroup.rotation.x += (targetY - gridGroup.rotation.x) * 0.05;
       
       // Subtle continuous rotation
-      gridGroup.rotation.y += 0.0005;
+      gridGroup.rotation.y += 0.0003;
       
       renderer.render(scene, camera);
       requestAnimationFrame(animate);

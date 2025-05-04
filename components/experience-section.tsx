@@ -11,7 +11,7 @@ const scrollFadeUp = {
     y: 0,
     transition: {
       duration: 0.6, // Slightly faster duration
-      ease: [0.25, 0.1, 0.25, 1.0] // Standard ease
+      ease: [0.16, 1, 0.3, 1] // Standard ease
     }
   }
 }
@@ -52,7 +52,7 @@ export default function ExperienceSection() {
   return (
     <section 
       id="journey" // Changed ID
-      className="py-24 scroll-section section-padding relative overflow-hidden"
+      className="section-animate py-24 scroll-section section-padding relative overflow-hidden"
     >
       {/* Background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">

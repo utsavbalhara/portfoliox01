@@ -53,35 +53,41 @@ export default function LoadingScreen() {
     return () => clearInterval(interval)
   }, [mounted])
 
-  // Define colors for segments (using CSS variables for theme compatibility)
-  // Ensure these variables are defined in your globals.css for light/dark themes
+  // Define colors for segments
   const segmentColors = `
     --segment-inactive: hsl(var(--muted) / 0.5);
     --segment-past: hsl(var(--primary) / 0.4);
     --segment-active: hsl(var(--primary));
   `
 
-  // Don't render anything during SSR or before hydration is complete
   if (!mounted) return null
 
   const totalSegments = 80 // Number of segments in the bar
   const activeSegment = Math.floor((progress / 100) * totalSegments)
+  
+  // Calculate the scale factor based on progress
+  // Start at 1.0 and increase to 1.3 as progress approaches 100%
+  const scaleAmount = 1 + (progress / 100) * 0.3
 
   return (
     <AnimatePresence>
       {loading && (
         <motion.div
           initial={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.5, ease: "easeInOut" }} // Slightly faster exit
+          exit={{ scale: 1.5, opacity: 0 }}
+          transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
           className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background"
-          style={{ '--progress-percent': `${Math.round(progress)}%` } as React.CSSProperties} // Pass progress for potential use
         >
-          {/* Inject segment colors as inline style */}
           <style>{`:root { ${segmentColors} }`}</style>
 
-          {/* Progress Bar Container */}
-          <div className="w-4/5 max-w-2xl relative">
+          {/* Progress Bar Container with dynamic scale */}
+          <motion.div 
+            className="w-4/5 max-w-3xl relative"
+            style={{ 
+              transformOrigin: "center",
+              scale: scaleAmount, // Apply dynamic scale based on progress
+            }}
+          >
             <div className="flex h-3 gap-1 mb-2">
               {Array.from({ length: totalSegments }).map((_, index) => (
                 <div key={index} className="flex-1">
@@ -92,20 +98,18 @@ export default function LoadingScreen() {
                 </div>
               ))}
             </div>
+            
             {/* Percentage Text */}
             <motion.div
               className="absolute -right-1 top-1/2 -translate-y-1/2 ml-4 text-xs font-mono font-medium text-primary/90"
-              key={Math.round(progress)} // Add key to force re-render on progress change for smoother updates
+              key={Math.round(progress)}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.2 }}
             >
               {Math.round(progress)}%
             </motion.div>
-          </div>
-
-          {/* Removed old pulse circle, progress circle, and initial text */}
-
+          </motion.div>
         </motion.div>
       )}
     </AnimatePresence>

@@ -52,7 +52,7 @@ export default function SkillsSection() {
   return (
     <section
       id="skills"
-      className="py-24 scroll-section section-padding relative overflow-hidden"
+      className="section-animate py-24 scroll-section section-padding relative overflow-hidden"
     >
       {/* Background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">

@@ -98,13 +98,13 @@ export default function ThreeScene({ intensity = 0.3 }: ThreeSceneProps) {
       frameIdRef.current = requestAnimationFrame(animate)
 
       if (pointsRef.current) {
-        // Slower, more subtle rotation
-        pointsRef.current.rotation.x += 0.0002
+        // Consistent, subtle rotation
+        pointsRef.current.rotation.x += 0.0003
         pointsRef.current.rotation.y += 0.0003
 
-        // Very subtle mouse interaction
-        pointsRef.current.rotation.x += mouseRef.current.y * 0.0005
-        pointsRef.current.rotation.y += mouseRef.current.x * 0.0005
+        // Subtle mouse interaction
+        pointsRef.current.rotation.x += mouseRef.current.y * 0.0003
+        pointsRef.current.rotation.y += mouseRef.current.x * 0.0003
       }
 
       if (rendererRef.current && sceneRef.current && cameraRef.current) {

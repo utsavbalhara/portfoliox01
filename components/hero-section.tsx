@@ -23,14 +23,14 @@ export default function HeroSection() {
       y: 0, 
       opacity: 1,
       transition: {
-        duration: 0.8,
+        duration: 0.6,
         ease: [0.16, 1, 0.3, 1]
       }
     }
   }
 
   return (
-    <section id="home" className="relative min-h-[90vh] flex items-center justify-center scroll-section pb-16">
+    <section id="home" className="section-animate relative min-h-[90vh] flex items-center justify-center scroll-section pb-16">
       {/* Cursor trail effect only on hero section */}
       {/* <CursorTrail /> */}
       

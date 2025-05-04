@@ -125,7 +125,7 @@ const EyeballA: React.FC = () => {
         ry={isBlinking ? blinkRy : isButtonHovered ? squintRy : normalRy}
         fill={whiteColor}
         style={{
-          transition: 'ry 0.1s ease-in-out'
+          transition: 'ry 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
         }}
       />
       {/* Pupil (black circle) */}
@@ -137,7 +137,7 @@ const EyeballA: React.FC = () => {
         fill={blackColor}
         style={{
           transform: pupilTransform,
-          transition: 'transform 0.05s ease-out'
+          transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
         }}
       />
     </svg>

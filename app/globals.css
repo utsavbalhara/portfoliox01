@@ -53,24 +53,32 @@
 
 @layer base {
   * {
-    @apply border-border;
+    border-color: hsl(var(--border));
+    font-family: var(--font-outfit);
+    font-weight: 500;
   }
   body {
-    @apply bg-background text-foreground;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
     font-feature-settings: "rlig" 1, "calt" 1;
     /* Remove complex gradient background */
     /* background: linear-gradient(...) */
     background-attachment: fixed; /* Keep this if needed for other bg effects */
+    border: 2px solid hsl(var(--border) / 0.1);
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-syne font-bold text-foreground;
+    font-family: var(--font-geist);
+    font-weight: 700;
+    color: hsl(var(--foreground));
     /* Adjust text shadow for better contrast in both themes */
     text-shadow: 0 1px 1px hsl(var(--background) / 0.4);
   }
   
   p {
-    @apply text-foreground/90;
+    color: hsl(var(--foreground) / 0.9);
+    font-family: var(--font-outfit);
+    font-weight: 500;
     text-shadow: 0 1px 1px hsl(var(--background) / 0.3);
   }
 }
@@ -78,116 +86,227 @@
 @layer components {
   /* Simplify component styles to rely more on base variables */
   .text-content-wrapper {
-    @apply rounded-xl p-6 bg-card/80 border border-border shadow-lg backdrop-blur-sm;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    background-color: hsl(var(--card) / 0.95);
+    border: 2px solid hsl(var(--border));
+    box-shadow: 0 10px 20px -3px rgba(0, 0, 0, 0.15), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(6px);
     /* Adjust transparency/blur as needed */
+  }
+
+  .heading-lg {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+    font-family: var(--font-geist);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  
+  @media (min-width: 640px) {
+    .heading-lg {
+      font-size: 3rem;
+      line-height: 1;
+    }
   }
 
   .gradient-text {
     /* Revert to a simpler text style or remove if not used */
-    @apply font-bold text-primary;
+    font-weight: 700;
+    color: hsl(var(--primary));
     /* Or define gradients specific to light/dark if needed */
   }
 
   .gradient-text-alt {
      /* Revert to a simpler text style or remove if not used */
-    @apply font-bold text-secondary-foreground;
+    font-weight: 700;
+    color: hsl(var(--secondary-foreground));
   }
 
   /* Simplify button, rely on variants from button.tsx which use CSS vars */
   .modern-button {
-    @apply relative overflow-hidden border border-primary text-primary bg-transparent transition-colors duration-700 ease-in-out;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid hsl(var(--primary));
+    color: hsl(var(--primary));
+    background-color: transparent;
     z-index: 1; /* Ensure button content is initially above pseudo-element */
+    font-weight: 600;
   }
 
   .modern-button::before {
     content: '';
-    @apply absolute top-1/2 left-1/2 w-0 h-0 rounded-full bg-primary transition-all duration-700 ease-in-out;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 9999px;
+    background-color: hsl(var(--primary));
     transform: translate(-50%, -50%) scale(0);
     z-index: -1; /* Position behind the text */
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .modern-button:hover {
-    @apply text-primary-foreground; /* Change text color on hover */
+    color: hsl(var(--primary-foreground)); /* Change text color on hover */
   }
 
   .modern-button:hover::before {
-    @apply w-[225%] h-[225%]; /* Make slightly larger than needed to ensure full cover */
+    width: 225%;
+    height: 225%; /* Make slightly larger than needed to ensure full cover */
     transform: translate(-50%, -50%) scale(1);
   }
 
   /* Simplify card styles */
   .feature-card {
-    @apply bg-card backdrop-blur-sm text-card-foreground 
-           border border-border
-           shadow-md transition-all duration-300 rounded-xl
-           hover:shadow-lg hover:border-primary/50 hover:-translate-y-1;
+    background-color: hsl(var(--card));
+    backdrop-filter: blur(4px); 
+    color: hsl(var(--card-foreground));
+    border: 1px solid hsl(var(--border));
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    border-radius: 0.75rem;
+    font-weight: 500;
+  }
+  
+  .feature-card:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    border-color: hsl(var(--primary) / 0.5);
+    transform: translateY(-0.25rem);
   }
 
   .modern-input {
-    @apply bg-input border border-border 
-           text-foreground rounded-md focus:border-primary 
-           focus:ring-1 focus:ring-ring focus:outline-none;
+    background-color: hsl(var(--input));
+    border: 1px solid hsl(var(--border));
+    color: hsl(var(--foreground));
+    border-radius: 0.375rem;
+    font-weight: 500;
+  }
+  
+  .modern-input:focus {
+    border-color: hsl(var(--primary));
+    box-shadow: 0 0 0 2px hsl(var(--ring));
+    outline: none;
   }
 
   .star {
     color: hsl(var(--primary));
     /* Keep pulse or simplify/remove */
      animation: pulse 3s infinite ease-in-out;
+     font-weight: 600;
   }
 
   /* Project card using blended background, --border, --primary shadow */
   .project-card {
-    @apply relative overflow-hidden rounded-xl transition-all duration-300 ease-out /* Smoother ease */
-           bg-card/80 
-           hover:shadow-lg hover:shadow-primary/15 
-           hover:-translate-y-0.5 hover:scale-[1.02] /* Smaller lift, slight scale */
-           backdrop-blur-sm
-           border border-border;
+    position: relative;
+    overflow: hidden;
+    border-radius: 0.75rem;
+    transition: all 0.3s ease-out; /* Smoother ease */
+    background-color: hsl(var(--card) / 0.95);
+    border: 2px solid hsl(var(--border));
+    backdrop-filter: blur(6px);
+    font-weight: 500;
+  }
+  
+  .project-card:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 0 15px hsl(var(--primary) / 0.2);
+    transform: translateY(-0.125rem) scale(1.02); /* Smaller lift, slight scale */
   }
 
   .nav-pill {
-    @apply px-4 py-2 rounded-full bg-background/80 backdrop-blur-md
-           flex items-center gap-3 border border-border
-           shadow-sm;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-radius: 9999px;
+    background-color: hsl(var(--background) / 0.95);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border: 2px solid hsl(var(--border));
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+    font-weight: 600;
   }
 
   .nav-link {
-    @apply text-muted-foreground hover:text-primary transition-colors duration-200
-           relative font-medium;
+    color: hsl(var(--muted-foreground));
+    transition: color 0.2s;
+    position: relative;
+    font-weight: 600;
   }
 
   .nav-link::after {
     content: '';
-    @apply absolute -bottom-1 left-0 h-0.5 w-0 bg-primary
-           transition-all duration-300 opacity-0;
+    position: absolute;
+    bottom: -0.25rem;
+    left: 0;
+    height: 0.125rem;
+    width: 0;
+    background-color: hsl(var(--primary));
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    opacity: 0;
   }
 
   .nav-link:hover::after,
   .nav-link.active::after {
-    @apply w-full opacity-100;
+    width: 100%;
+    opacity: 1;
+  }
+
+  .nav-link:hover {
+    color: hsl(var(--primary));
   }
 
   .nav-link.active {
-    @apply text-primary;
+    color: hsl(var(--primary));
   }
 
   /* Badge styles should work fine as they use CSS vars */
   .badge {
-    @apply inline-flex items-center justify-center px-2 py-0.5 rounded-md text-xs font-medium border;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    padding-top: 0.125rem;
+    padding-bottom: 0.125rem;
+    border-radius: 0.375rem;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 600;
+    border: 1px solid;
   }
 
   .badge-primary {
-    @apply bg-primary/10 text-primary border-primary/20;
+    background-color: hsl(var(--primary) / 0.1);
+    color: hsl(var(--primary));
+    border-color: hsl(var(--primary) / 0.2);
   }
 
   .badge-secondary {
-    @apply bg-secondary/10 text-secondary-foreground border-secondary/20;
+    background-color: hsl(var(--secondary) / 0.1);
+    color: hsl(var(--secondary-foreground));
+    border-color: hsl(var(--secondary) / 0.2);
   }
 
   .glass-card {
-    @apply rounded-xl backdrop-blur-sm border border-border/50
-          bg-card/60 text-foreground shadow-md transition-all duration-300
-          hover:shadow-lg hover:bg-card/75 hover:border-border/80;
+    border-radius: 0.75rem; /* rounded-xl */
+    backdrop-filter: blur(6px); /* backdrop-blur-sm */
+    border: 2px solid hsl(var(--border) / 0.7); /* border border-border/50 */
+    background-color: hsl(var(--card) / 0.9); /* bg-card/60 */
+    color: hsl(var(--foreground));  /* text-foreground */
+    box-shadow: 0 6px 8px -1px rgba(0, 0, 0, 0.15), 0 3px 5px -1px rgba(0, 0, 0, 0.1); /* shadow-md */
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); /* transition-all duration-300 */
+    font-weight: 500;
+  }
+  
+  .glass-card:hover {
+    box-shadow: 0 12px 18px -3px rgba(0, 0, 0, 0.15), 0 6px 8px -2px rgba(0, 0, 0, 0.1); /* hover:shadow-lg */
+    background-color: hsl(var(--card) / 0.95); /* hover:bg-card/75 */
+    border-color: hsl(var(--border) / 0.9); /* hover:border-border/80 */
   }
 }
 
@@ -203,6 +322,7 @@
 ::-webkit-scrollbar-thumb {
   background: hsl(var(--muted-foreground) / 0.5); /* Higher opacity */
   border-radius: 10px;
+  transition: background 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -223,12 +343,13 @@
 
 /* Adjust grid color for better visibility in light mode */
 .bg-grid-white {
-   background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cline x1='0' y1='100' x2='100' y2='100' stroke='hsl(var(--foreground))' stroke-opacity='0.08' stroke-width='1'/%3E%3Cline x1='100' y1='0' x2='100' y2='100' stroke='hsl(var(--foreground))' stroke-opacity='0.08' stroke-width='1'/%3E%3C/svg%3E");
+   background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cline x1='0' y1='100' x2='100' y2='100' stroke='hsl(var(--foreground))' stroke-opacity='0.08' stroke-width='2'/%3E%3Cline x1='100' y1='0' x2='100' y2='100' stroke='hsl(var(--foreground))' stroke-opacity='0.08' stroke-width='2'/%3E%3C/svg%3E");
 }
 
 /* Enhanced glow for light mode */
 .glow:hover {
   filter: drop-shadow(0 0 8px hsl(var(--primary) / 0.4));
+  transition: filter 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* Adjust loading dots */
@@ -238,8 +359,10 @@
 
 /* Glass effect - enhanced for light mode */
 .glass-effect {
-  @apply backdrop-blur-md bg-background/60 dark:bg-background/40 border-border/50;
-  box-shadow: 0 4px 32px -8px rgba(0, 0, 0, 0.1);
+  @apply backdrop-blur-lg bg-background/90 dark:bg-background/70 border-border/70;
+  box-shadow: 0 6px 36px -8px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border-width: 2px;
 }
 
 /* Light mode specific optimizations */
@@ -277,28 +400,26 @@
 
 /* Hollow button with SLOW center-fill animation */
 .fill-center-button {
-  @apply relative overflow-hidden border border-primary text-primary bg-transparent transition-colors duration-500 ease-out;
-  /* Default: transparent bg, primary border/text, slow text transition */
+  @apply relative overflow-hidden border border-primary text-primary bg-transparent;
+  transition: color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   z-index: 1;
+  font-weight: 600;
 }
 
 .fill-center-button::before {
   content: '';
-  @apply absolute top-1/2 left-1/2 w-0 h-0 rounded-full bg-primary transition-all duration-700 ease-out;
-  /* Start as 0x0 circle at center, use primary bg, slow transition */
+  @apply absolute top-1/2 left-1/2 w-0 h-0 rounded-full bg-primary;
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
   transform: translate(-50%, -50%); 
   z-index: -1;
 }
 
 .fill-center-button:hover {
   @apply text-primary-foreground;
-  /* Text changes color over the slower duration */
-  /* Border color remains primary */
 }
 
 .fill-center-button:hover::before {
-  @apply w-[225%] h-[225%]; /* Expand circle to cover */
-  /* Scale is handled by width/height transition */
+  @apply w-[225%] h-[225%];
 }
 
 /* Tacky/Edgy Scroll-to-Top Button Animation - REMOVED */
