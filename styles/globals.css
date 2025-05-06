@@ -115,3 +115,91 @@ body {
   }
 }
 */
+
+@layer components {
+  /* Animated Button Styles */
+  .animated-button {
+    @apply relative z-0 overflow-hidden transition-colors duration-700 ease-in-out;
+    /* Ensure text is above the pseudo-element */
+    & > * { 
+      @apply relative z-10; 
+    }
+  }
+
+  .animated-button::before {
+    @apply content-[''] absolute inset-0 -z-10 scale-0 rounded-[inherit] bg-primary transition-transform duration-700 ease-in-out;
+    /* Use CSS var for background, assuming default variant */
+    background-color: hsl(var(--primary)); 
+    transform-origin: center;
+  }
+
+  /* Default Variant Hover */
+  .animated-button:hover::before {
+    @apply scale-100;
+  }
+  .animated-button:hover {
+    /* Use CSS var for text color on hover, assuming default variant */
+    color: hsl(var(--primary-foreground)) !important; 
+  }
+  
+  /* Outline Variant Adjustments (needs different hover colors) */
+  .animated-button.border.border-input::before {
+      /* Use accent color for outline hover background */
+      background-color: hsl(var(--accent));
+  }
+  .animated-button.border.border-input:hover {
+      /* Use accent-foreground color for outline hover text */
+      color: hsl(var(--accent-foreground)) !important;
+  }
+  
+  /* Secondary Variant Adjustments */
+  .animated-button.bg-secondary::before {
+    /* Use secondary color for background */
+    background-color: hsl(var(--secondary));
+  }
+    .animated-button.bg-secondary:hover::before {
+        /* Use slighly darker secondary on hover */
+        background-color: hsl(var(--secondary) / 0.8);
+    }
+  .animated-button.bg-secondary:hover {
+    /* Keep secondary foreground color on hover */
+    color: hsl(var(--secondary-foreground)) !important; 
+  }
+  
+  /* Destructive Variant Adjustments */
+  .animated-button.bg-destructive::before {
+      /* Use destructive color for background */
+      background-color: hsl(var(--destructive));
+  }
+  .animated-button.bg-destructive:hover::before {
+      /* Use slightly darker destructive on hover */
+      background-color: hsl(var(--destructive) / 0.9);
+  }
+  .animated-button.bg-destructive:hover {
+      /* Keep destructive foreground color on hover */
+      color: hsl(var(--destructive-foreground)) !important;
+  }
+  
+    /* Ghost Variant Adjustments */
+  .animated-button.hover\:bg-accent::before { /* Target ghost via its hover class */
+      /* Use accent color for background */
+      background-color: hsl(var(--accent));
+  }
+  .animated-button.hover\:bg-accent:hover {
+      /* Use accent-foreground color for ghost hover text */
+      color: hsl(var(--accent-foreground)) !important;
+      background-color: transparent !important; /* Override the base hover color from CVA */
+  }
+  
+  /* Link Variant - Exclude from animation (or style differently if needed) */
+  .animated-button.text-primary.underline-offset-4 {
+      /* Optional: Override animation styles if link shouldn't animate */
+      overflow: visible; /* Prevent clipping */
+  }
+    .animated-button.text-primary.underline-offset-4::before {
+        content: none; /* Disable pseudo-element */
+    }
+    .animated-button.text-primary.underline-offset-4:hover {
+        color: hsl(var(--primary)) !important; /* Reset color if needed */
+    }
+}

@@ -68,11 +68,31 @@ export default function CustomCursor() {
     window.addEventListener("mouseover", handleMouseOver)
     window.addEventListener("mouseout", handleMouseOut)
     
+    // Inject style to hide default cursor forcefully
+    const styleId = "custom-cursor-hide-native";
+    let styleElement = document.getElementById(styleId);
+    if (!styleElement) {
+      styleElement = document.createElement("style");
+      styleElement.id = styleId;
+      styleElement.innerHTML = `
+        .cursor-hidden * {
+          cursor: none !important;
+        }
+      `;
+      document.head.appendChild(styleElement);
+    }
+    
     return () => {
       document.documentElement.classList.remove("cursor-hidden")
       window.removeEventListener("mousemove", handleMouseMove)
       window.removeEventListener("mouseover", handleMouseOver)
       window.removeEventListener("mouseout", handleMouseOut)
+      
+      // Remove injected style
+      const styleToRemove = document.getElementById(styleId);
+      if (styleToRemove) {
+        styleToRemove.remove();
+      }
     }
   }, [mounted, cursorX, cursorY])
   
@@ -81,32 +101,25 @@ export default function CustomCursor() {
     return null
   }
   
-  // Define cursor colors based on theme
-  const isDarkMode = resolvedTheme === "dark"
+  // Use white for difference blend mode
+  const cursorBaseColor = "#FFFFFF";
+  const dotOpacityDefault = 0.8;
+  const ringOpacityDefault = 0.3;
   
-  // Improved color and opacity for better light mode visibility
-  const dotColor = isDarkMode ? "#FFFFFF" : "#000000"
-  const dotOpacity = isDarkMode ? 1 : 0.85 // Higher opacity in light mode for visibility
-  const ringColor = isDarkMode ? "border-white" : "border-black"
-  const ringOpacity = isDarkMode ? 0.2 : 0.4 // Higher opacity in light mode for visibility
-  
-  // Styles for the main cursor dot, including triangle transformation
+  // Styles for the main cursor dot
   const dotStyle = {
-    height: isPointer ? '0px' : '8px',
-    width: isPointer ? '0px' : '8px',
-    backgroundColor: isPointer ? 'transparent' : dotColor,
-    opacity: dotOpacity,
-    borderRadius: isPointer ? '0' : '9999px',
-    borderLeft: isPointer ? '6px solid transparent' : '0px solid transparent', 
-    borderRight: isPointer ? '6px solid transparent' : '0px solid transparent',
-    borderBottom: isPointer ? `10px solid ${dotColor}` : '0px solid transparent',
-    // Add slight blur in light mode for better visibility
-    filter: !isDarkMode ? 'drop-shadow(0 0 1px rgba(0,0,0,0.5))' : 'none',
-  };
+    // Make dot LARGER on hover
+    height: isPointer ? '14px' : '10px', 
+    width: isPointer ? '14px' : '10px', 
+    backgroundColor: cursorBaseColor, 
+    opacity: isPointer ? 0.9 : dotOpacityDefault, // Keep opacity high on hover for now
+    borderRadius: '9999px', 
+    mixBlendMode: 'difference', // Apply difference blend mode
+  } as const; // Use 'as const' for type safety with mixBlendMode
 
   return (
     <>
-      {/* Main cursor dot - Now transforms into a triangle */}
+      {/* Main cursor dot - Now shrinks on hover w/ blend mode */}
       <motion.div
         className="fixed top-0 left-0 z-[100] pointer-events-none"
         style={{
@@ -117,35 +130,42 @@ export default function CustomCursor() {
           ...dotStyle
         }}
         animate={{
-          scale: isHovering ? (isPointer ? 1.2 : 0.5) : 1,
-          opacity: isHovering ? (isDarkMode ? 1 : 0.9) : (isDarkMode ? 0.8 : 0.7),
+          scale: isHovering ? 1.1 : 1, 
+          // Opacity now handled directly in dotStyle for simplicity
+          // opacity: isPointer ? (isDarkMode ? 0.9 : 0.8) : (isDarkMode ? 0.8 : 0.7), 
         }}
         transition={{ duration: 0.15, type: "spring", stiffness: 500, damping: 30 }}
-      >
-        {/* Content removed as styling is handled by parent now */}
-      </motion.div>
+      />
       
-      {/* Cursor ring/circle - Behaviour remains the same */}
+      {/* Cursor ring/circle - Expands more on hover w/ blend mode */}
       <motion.div
         ref={cursorRef}
-        className={`fixed top-0 left-0 z-[99] rounded-full pointer-events-none border ${ringColor}`}
+        // Removed theme-based border color class
+        className={`fixed top-0 left-0 z-[99] rounded-full pointer-events-none border`}
         style={{
           x: cursorXSpring,
           y: cursorYSpring,
           translateX: "-50%",
           translateY: "-50%",
-          borderColor: isDarkMode ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.35)'
+          // Use white border for difference blend mode
+          borderColor: cursorBaseColor, 
+          mixBlendMode: 'difference', // Apply difference blend mode
         }}
         animate={{
-          width: isPointer ? "40px" : "20px",
-          height: isPointer ? "40px" : "20px",
-          opacity: ringOpacity,
-          scale: isHovering ? 1.2 : 1,
-          borderWidth: !isDarkMode ? "1.5px" : "1px", // Thicker border in light mode
+          // Keep width/height constant regardless of hover
+          width: "30px", 
+          height: "30px", 
+          // Keep opacity constant regardless of hover
+          opacity: ringOpacityDefault, 
+          // Keep scale animation subtle
+          scale: isHovering ? 1.05 : 1, 
+          // Keep border width constant regardless of hover
+          borderWidth: "1px", 
         }}
         transition={{ 
-          duration: 0.3,
-          type: "spring", stiffness: 300, damping: 25
+          duration: 0.25, 
+          // Adjusted spring for smoother feel (less stiff, more damped)
+          type: "spring", stiffness: 350, damping: 35 
         }}
       />
     </>
