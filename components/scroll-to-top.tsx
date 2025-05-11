@@ -1,15 +1,39 @@
 "use client"
 
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState, useRef, useCallback } from "react"
 import { motion } from "framer-motion"
 import { useButtonHover } from "@/context/HoverContext"
-import { useTheme } from "next-themes"
+
+// Simple throttle function (can be moved to a utils file if used elsewhere)
+function throttle<T extends (...args: any[]) => any>(func: T, limit: number): (...args: Parameters<T>) => void {
+  let inThrottle: boolean;
+  let lastFunc: ReturnType<typeof setTimeout>;
+  let lastRan: number;
+  return function(this: ThisParameterType<T>, ...args: Parameters<T>) {
+    const context = this;
+    if (!inThrottle) {
+      func.apply(context, args);
+      lastRan = Date.now();
+      inThrottle = true;
+      setTimeout(() => {
+        inThrottle = false;
+      }, limit);
+    } else {
+      clearTimeout(lastFunc);
+      lastFunc = setTimeout(() => {
+        if ((Date.now() - lastRan) >= limit) {
+          func.apply(context, args);
+          lastRan = Date.now();
+        }
+      }, limit - (Date.now() - lastRan));
+    }
+  };
+}
 
 export default function ScrollToTop() {
   const [isVisible, setIsVisible] = useState(false)
   const [isBlinking, setIsBlinking] = useState(false)
   const [mounted, setMounted] = useState(false)
-  const { resolvedTheme } = useTheme()
 
   const buttonRef = useRef<HTMLButtonElement>(null)
   const pupilRef = useRef<SVGCircleElement>(null)
@@ -18,7 +42,6 @@ export default function ScrollToTop() {
 
   const { isButtonHovered } = useButtonHover()
 
-  // Mount check
   useEffect(() => {
     setMounted(true)
   }, [])
@@ -53,7 +76,7 @@ export default function ScrollToTop() {
     }
 
     if (isVisible) {
-      window.addEventListener('mousemove', handleMouseMove)
+      window.addEventListener('mousemove', handleMouseMove, { passive: true })
     } else {
       setPupilTransform('') 
     }
@@ -63,38 +86,38 @@ export default function ScrollToTop() {
     }
   }, [isVisible])
 
+  const toggleVisibility = useCallback(throttle(() => {
+    const sections = document.querySelectorAll("section[id]") as NodeListOf<HTMLElement>;
+    let currentSectionId = "home"; // Default to home
+    const currentScrollY = window.scrollY;
+
+    sections.forEach((section) => {
+      const sectionTop = section.offsetTop - 150; // Adjusted offset for earlier trigger
+      const sectionHeight = section.offsetHeight;
+      if (
+        currentScrollY >= sectionTop &&
+        currentScrollY < sectionTop + sectionHeight
+      ) {
+        currentSectionId = section.getAttribute("id") || "home";
+      }
+    });
+    
+    // Show button if not in "home" section and scrolled a bit
+    // OR if scrolled very far down regardless of section (e.g., past 1.5x viewport height)
+    const showButton = (currentSectionId !== "home" && currentScrollY > 50) || currentScrollY > window.innerHeight * 1.5;
+    setIsVisible(showButton);
+
+  }, 100), []);
+
   useEffect(() => {
-    const toggleVisibility = () => {
-      const journeySection = document.getElementById('journey')
-      if (!journeySection) {
-        if (window.scrollY > window.innerHeight * 0.5) {
-          setIsVisible(true)
-        } else {
-          setIsVisible(false)
-        }
-        return
-      }
-
-      const threshold = journeySection.offsetTop + journeySection.offsetHeight
-
-      if (window.scrollY > threshold) {
-        setIsVisible(true)
-      } else {
-        setIsVisible(false)
-      }
-    }
-
     window.addEventListener("scroll", toggleVisibility, { passive: true })
-    toggleVisibility()
-
+    toggleVisibility() // Initial check
     return () => window.removeEventListener("scroll", toggleVisibility)
-  }, [])
+  }, [toggleVisibility])
 
   const scrollToTop = () => {
     if (isBlinking) return
-
     setIsBlinking(true)
-    
     setTimeout(() => {
       setIsBlinking(false)
     }, 150)
@@ -108,11 +131,13 @@ export default function ScrollToTop() {
   const buttonVariants = {
     hidden: {
       opacity: 0,
-      scale: 0.95,
-      y: 20,
+      scale: 0.5, // Start smaller for a better pop
+      y: 50,      // Start a bit lower
       transition: {
-        duration: 0.6,
-        ease: [0.16, 1, 0.3, 1]
+        type: "spring",
+        stiffness: 400,
+        damping: 25,
+        duration: 0.3
       }
     },
     visible: {
@@ -120,8 +145,10 @@ export default function ScrollToTop() {
       scale: 1,
       y: 0,
       transition: {
-        duration: 0.6,
-        ease: [0.16, 1, 0.3, 1]
+        type: "spring",
+        stiffness: 400,
+        damping: 20,
+        duration: 0.3
       }
     }
   }
@@ -130,23 +157,19 @@ export default function ScrollToTop() {
   const squintRy = 5
   const blinkRy = 2
 
-  // Theme-specific styling
-  const isDark = mounted && resolvedTheme === 'dark'
-  const strokeWidth = isDark ? 6 : 5 // Thinner stroke in light mode
-  const eyeColor = isDark ? 'hsl(var(--foreground))' : 'hsl(var(--foreground))'
-  const pupilColor = isDark ? 'hsl(var(--primary-foreground))' : 'hsl(var(--primary-foreground))'
-  const buttonClass = isDark ? 
-    "fixed bottom-8 right-8 w-12 h-12 z-[9999]" : 
-    "fixed bottom-8 right-8 w-12 h-12 z-[9999] shadow-md backdrop-blur-sm rounded-full"
+  // Dark mode only styling (simplified)
+  const strokeWidth = 6;
+  const eyeColor = 'hsl(var(--foreground))';
+  const pupilColor = 'hsl(var(--primary-foreground))';
+  const buttonContainerClass = "fixed bottom-8 right-8 w-12 h-12 z-[999] rounded-full"; // z-index slightly lower than navbar
 
   if (!mounted) {
-    // Return a placeholder with the same size to avoid layout shift
-    return null
+    return null; // Or a placeholder if layout shift is an issue, but null is fine for a fixed button
   }
 
   return (
     <motion.div
-      className={buttonClass}
+      className={buttonContainerClass}
       variants={buttonVariants}
       initial="hidden"
       animate={isVisible ? "visible" : "hidden"}
@@ -154,18 +177,16 @@ export default function ScrollToTop() {
       <button
         ref={buttonRef}
         onClick={scrollToTop}
-        className="w-full h-full cursor-pointer transition-opacity duration-300 flex items-center justify-center"
+        className="w-full h-full cursor-pointer transition-opacity duration-300 flex items-center justify-center bg-background/50 backdrop-blur-sm border border-border/50 rounded-full shadow-xl hover:bg-secondary/70"
         aria-label="Scroll to top"
         style={{
-          background: 'transparent',
-          border: 'none',
           padding: 0,
           overflow: 'visible',
         }}
       >
         <svg 
           viewBox="0 0 100 100"
-          className="w-full h-full text-[hsl(var(--foreground))] transition-colors duration-300"
+          className="w-10 h-10 text-[hsl(var(--foreground))] transition-colors duration-300"
           aria-hidden="true"
         >
           <polygon 
@@ -182,7 +203,7 @@ export default function ScrollToTop() {
             ry={isBlinking ? blinkRy : isButtonHovered ? squintRy : normalRy}
             fill={eyeColor}
             style={{
-              transition: 'ry 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+              transition: 'ry 0.15s cubic-bezier(0.16, 1, 0.3, 1)' // Faster blink
             }}
           />
           <circle 
@@ -193,7 +214,7 @@ export default function ScrollToTop() {
             fill={pupilColor}
             style={{
               transform: pupilTransform,
-              transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+              transition: 'transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)'
             }}
           />
         </svg>

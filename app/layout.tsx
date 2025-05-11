@@ -1,6 +1,5 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Geist } from "next/font/google"
 import { Outfit } from "next/font/google"
 import { Syne } from "next/font/google"
 import "./globals.css"
@@ -10,8 +9,9 @@ import SvgFilters from "@/components/svg-filters"
 import LoadingScreen from "@/components/loading-screen"
 import { Toaster } from "@/components/ui/toaster"
 import { HoverProvider } from "@/context/HoverContext"
+import "@fontsource-variable/rethink-sans" // Import Rethink Sans font
+import "../public/fonts/neue-metana/neue-metana.css"
 
-const geist = Geist({ subsets: ["latin"], variable: "--font-geist" })
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" })
 const syne = Syne({ subsets: ["latin"], variable: "--font-syne" })
 
@@ -27,9 +27,9 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
-      <body className={cn("min-h-screen antialiased font-outfit", outfit.variable, geist.variable, syne.variable)} suppressHydrationWarning>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+    <html lang="en" className="scroll-smooth antialiased">
+      <body className={cn("min-h-screen font-sans cursor-hidden dark", outfit.variable, syne.variable)} suppressHydrationWarning>
+        <ThemeProvider attribute="class" defaultTheme="dark" forcedTheme="dark" enableSystem={false} disableTransitionOnChange>
           <HoverProvider>
             <SvgFilters />
             <LoadingScreen />

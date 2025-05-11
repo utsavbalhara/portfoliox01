@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useButtonHover } from "@/context/HoverContext"; // Import the hook
-import { useTheme } from "next-themes"; // Import theme hook
 
 // Renamed component
 const EyeballA: React.FC = () => {
@@ -11,7 +10,6 @@ const EyeballA: React.FC = () => {
   const ellipseRef = useRef<SVGEllipseElement>(null);
   const [pupilTransform, setPupilTransform] = useState('');
   const [isBlinking, setIsBlinking] = useState(false);
-  const { resolvedTheme } = useTheme(); // Get current theme
   const [mounted, setMounted] = useState(false);
 
   // Mount check to avoid hydration mismatch
@@ -66,6 +64,19 @@ const EyeballA: React.FC = () => {
     };
   }, []);
 
+  // Add global click listener to trigger blink
+  useEffect(() => {
+    const handleGlobalClick = () => {
+      handleBlink();
+    };
+
+    document.addEventListener('click', handleGlobalClick);
+    
+    return () => {
+      document.removeEventListener('click', handleGlobalClick);
+    };
+  }, []);
+
   const handleBlink = () => {
     if (isBlinking) return;
     setIsBlinking(true);
@@ -89,12 +100,11 @@ const EyeballA: React.FC = () => {
   const squintRy = 5; // Adjust squint level as needed
   const blinkRy = 2; // Even more squinted for blinking
   
-  // Set theme-specific colors
-  const isDark = mounted && resolvedTheme === 'dark';
+  // Set dark theme colors
   const strokeColor = 'currentColor'; // Use text color from parent
-  const whiteColor = isDark ? 'white' : '#f8f8f8'; // Slightly off-white in light mode
-  const blackColor = isDark ? 'black' : '#222222'; // Slightly lighter black in light mode
-  const strokeWidth = isDark ? 8 : 6; // Thinner stroke in light mode for better appearance
+  const whiteColor = 'white';
+  const blackColor = 'black';
+  const strokeWidth = 8; // Use dark mode stroke width
 
   if (!mounted) {
     // Return a placeholder with same dimensions to avoid layout shift
@@ -106,7 +116,6 @@ const EyeballA: React.FC = () => {
       ref={svgRef}
       viewBox="0 0 100 100" // ViewBox defines internal coordinate system
       style={svgStyle}
-      onClick={handleBlink}
       aria-hidden="true"
     >
       {/* Outer Triangle (stroke only) */}
@@ -125,7 +134,7 @@ const EyeballA: React.FC = () => {
         ry={isBlinking ? blinkRy : isButtonHovered ? squintRy : normalRy}
         fill={whiteColor}
         style={{
-          transition: 'ry 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+          transition: 'ry 0.15s cubic-bezier(0.16, 1, 0.3, 1)'
         }}
       />
       {/* Pupil (black circle) */}

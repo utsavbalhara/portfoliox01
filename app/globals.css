@@ -3,32 +3,8 @@
 @tailwind utilities;
 
 @layer base {
-  /* Light Theme (Optimized) */
+  /* Dark Theme Only */
   :root {
-    --background: 0 0% 100%; /* White */
-    --foreground: 0 0% 3.9%; /* Near Black */
-    --card: 0 0% 100%; /* White */
-    --card-foreground: 0 0% 3.9%; /* Near Black */
-    --popover: 0 0% 100%; /* White */
-    --popover-foreground: 0 0% 3.9%; /* Near Black */
-    --primary: 0 0% 9%; /* Near Black */
-    --primary-foreground: 0 0% 98%; /* Near White */
-    --secondary: 0 0% 96.1%; /* Light Grey */
-    --secondary-foreground: 0 0% 9%; /* Near Black */
-    --muted: 0 0% 96.1%; /* Light Grey */
-    --muted-foreground: 0 0% 40%; /* Slightly darker Mid Grey for better contrast */
-    --accent: 0 0% 96.1%; /* Light Grey */
-    --accent-foreground: 0 0% 9%; /* Near Black */
-    --destructive: 0 84.2% 55%; /* Slightly darker Red for better contrast */
-    --destructive-foreground: 0 0% 98%; /* Near White */
-    --border: 0 0% 84%; /* Slightly darker border for better visibility */
-    --input: 0 0% 84%; /* Slightly darker border for better visibility */
-    --ring: 0 0% 3.9%; /* Near Black */
-    --radius: 0.5rem; /* Slightly less rounded */
-  }
-
-  /* Dark Theme */
-  .dark {
     --background: 0 0% 3.9%; /* Near Black */
     --foreground: 0 0% 98%; /* Near White */
     --card: 0 0% 3.9%; /* Near Black */
@@ -48,14 +24,19 @@
     --border: 0 0% 14.9%; /* Dark Border */
     --input: 0 0% 14.9%; /* Dark Border */
     --ring: 0 0% 83.1%; /* Light Grey for Ring */
+    --radius: 0.5rem; /* Slightly less rounded */
   }
 }
 
 @layer base {
   * {
     border-color: hsl(var(--border));
-    font-family: var(--font-outfit);
-    font-weight: 500;
+    font-family: 'Rethink Sans Variable', system-ui, sans-serif;
+    font-weight: 300;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
   }
   body {
     background-color: hsl(var(--background));
@@ -68,7 +49,7 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-geist);
+    font-family: var(--font-syne), serif;
     font-weight: 700;
     color: hsl(var(--foreground));
     /* Adjust text shadow for better contrast in both themes */
@@ -77,8 +58,8 @@
   
   p {
     color: hsl(var(--foreground) / 0.9);
-    font-family: var(--font-outfit);
-    font-weight: 500;
+    font-family: 'Rethink Sans Variable', system-ui, sans-serif;
+    font-weight: 300;
     text-shadow: 0 1px 1px hsl(var(--background) / 0.3);
   }
 }
@@ -98,9 +79,9 @@
   .heading-lg {
     font-size: 2.25rem;
     line-height: 2.5rem;
-    font-family: var(--font-geist);
-    font-weight: 700;
-    letter-spacing: -0.02em;
+    font-family: var(--font-syne), serif;
+    font-weight: 800;
+    letter-spacing: -0.01em;
   }
   
   @media (min-width: 640px) {
@@ -113,6 +94,7 @@
   .gradient-text {
     /* Revert to a simpler text style or remove if not used */
     font-weight: 700;
+    font-family: var(--font-syne), serif;
     color: hsl(var(--primary));
     /* Or define gradients specific to light/dark if needed */
   }
@@ -120,6 +102,7 @@
   .gradient-text-alt {
      /* Revert to a simpler text style or remove if not used */
     font-weight: 700;
+    font-family: var(--font-syne), serif;
     color: hsl(var(--secondary-foreground));
   }
 
@@ -131,7 +114,7 @@
     color: hsl(var(--primary));
     background-color: transparent;
     z-index: 1; /* Ensure button content is initially above pseudo-element */
-    font-weight: 600;
+    font-weight: 500;
   }
 
   .modern-button::before {
@@ -167,7 +150,7 @@
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     border-radius: 0.75rem;
-    font-weight: 500;
+    font-weight: 400;
   }
   
   .feature-card:hover {
@@ -181,7 +164,7 @@
     border: 1px solid hsl(var(--border));
     color: hsl(var(--foreground));
     border-radius: 0.375rem;
-    font-weight: 500;
+    font-weight: 400;
   }
   
   .modern-input:focus {
@@ -194,7 +177,7 @@
     color: hsl(var(--primary));
     /* Keep pulse or simplify/remove */
      animation: pulse 3s infinite ease-in-out;
-     font-weight: 600;
+     font-weight: 500;
   }
 
   /* Project card using blended background, --border, --primary shadow */
@@ -206,7 +189,7 @@
     background-color: hsl(var(--card) / 0.95);
     border: 2px solid hsl(var(--border));
     backdrop-filter: blur(6px);
-    font-weight: 500;
+    font-weight: 400;
   }
   
   .project-card:hover {
@@ -228,14 +211,14 @@
     gap: 0.75rem;
     border: 2px solid hsl(var(--border));
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
-    font-weight: 600;
+    font-weight: 500;
   }
 
   .nav-link {
     color: hsl(var(--muted-foreground));
     transition: color 0.2s;
     position: relative;
-    font-weight: 600;
+    font-weight: 500;
   }
 
   .nav-link::after {
@@ -310,9 +293,9 @@
   }
 }
 
-/* Custom Scrollbar - Enhanced for light mode */
+/* Custom Scrollbar - Dark mode */
 ::-webkit-scrollbar {
-  width: 8px; /* Slightly wider for better visibility */
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -320,13 +303,13 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted-foreground) / 0.5); /* Higher opacity */
+  background: hsl(var(--muted-foreground) / 0.5);
   border-radius: 10px;
   transition: background 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--muted-foreground) / 0.7); /* Higher opacity on hover */
+  background: hsl(var(--muted-foreground) / 0.7);
 }
 
 /* Text reveal */
@@ -335,18 +318,29 @@
   transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Noise effect - lighter in light mode, darker in dark mode */
+/* Noise effect - darker for dark mode */
 .noise {
   opacity: 0.02;
   mix-blend-mode: difference;
 }
 
-/* Adjust grid color for better visibility in light mode */
+/* Adjust grid color for dark mode */
 .bg-grid-white {
-   background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cline x1='0' y1='100' x2='100' y2='100' stroke='hsl(var(--foreground))' stroke-opacity='0.08' stroke-width='2'/%3E%3Cline x1='100' y1='0' x2='100' y2='100' stroke='hsl(var(--foreground))' stroke-opacity='0.08' stroke-width='2'/%3E%3C/svg%3E");
+   background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cline x1='0' y1='100' x2='100' y2='100' stroke='white' stroke-opacity='0.15' stroke-width='2.5'/%3E%3Cline x1='100' y1='0' x2='100' y2='100' stroke='white' stroke-opacity='0.15' stroke-width='2.5'/%3E%3Ccircle cx='100' cy='100' r='3' fill='white' fill-opacity='0.2'/%3E%3Ccircle cx='25' cy='25' r='1.5' fill='white' fill-opacity='0.1'/%3E%3Ccircle cx='75' cy='75' r='1.5' fill='white' fill-opacity='0.1'/%3E%3Ccircle cx='50' cy='50' r='2' fill='white' fill-opacity='0.15'/%3E%3C/svg%3E");
+   background-size: 50px 50px;
+   animation: subtleFloat 20s infinite alternate ease-in-out;
 }
 
-/* Enhanced glow for light mode */
+@keyframes subtleFloat {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 15px 10px;
+  }
+}
+
+/* Enhanced glow for dark mode */
 .glow:hover {
   filter: drop-shadow(0 0 8px hsl(var(--primary) / 0.4));
   transition: filter 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -354,33 +348,17 @@
 
 /* Adjust loading dots */
 .loading-dot {
-  @apply bg-primary;
+  background-color: hsl(var(--primary));
 }
 
-/* Glass effect - enhanced for light mode */
+/* Glass effect for dark mode */
 .glass-effect {
-  @apply backdrop-blur-lg bg-background/90 dark:bg-background/70 border-border/70;
+  backdrop-filter: blur(10px);
+  background-color: hsl(var(--background) / 0.9);
+  border-color: hsl(var(--border) / 0.7);
   box-shadow: 0 6px 36px -8px rgba(0, 0, 0, 0.2);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   border-width: 2px;
-}
-
-/* Light mode specific optimizations */
-@media (prefers-color-scheme: light) {
-  .glass-card {
-    box-shadow: 0 4px 24px -8px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Additional light mode shadows for cards and elements */
-  .card-shadow {
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  }
-  
-  /* Improved button hover effect for light mode */
-  button:hover, 
-  a:hover {
-    filter: brightness(0.95);
-  }
 }
 
 /* For users who prefer reduced motion */
@@ -400,7 +378,11 @@
 
 /* Hollow button with SLOW center-fill animation */
 .fill-center-button {
-  @apply relative overflow-hidden border border-primary text-primary bg-transparent;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid hsl(var(--primary));
+  color: hsl(var(--primary));
+  background-color: transparent;
   transition: color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   z-index: 1;
   font-weight: 600;
@@ -408,18 +390,25 @@
 
 .fill-center-button::before {
   content: '';
-  @apply absolute top-1/2 left-1/2 w-0 h-0 rounded-full bg-primary;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 9999px;
+  background-color: hsl(var(--primary));
   transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
   transform: translate(-50%, -50%); 
   z-index: -1;
 }
 
 .fill-center-button:hover {
-  @apply text-primary-foreground;
+  color: hsl(var(--primary-foreground));
 }
 
 .fill-center-button:hover::before {
-  @apply w-[225%] h-[225%];
+  width: 225%;
+  height: 225%;
 }
 
 /* Tacky/Edgy Scroll-to-Top Button Animation - REMOVED */
@@ -431,3 +420,9 @@
 */
 
 /* Cursor Trail Effects - Removed ... */
+
+@layer utilities {
+  .text-shadow-sm {
+    text-shadow: 0 0 2px rgba(0, 0, 0, 0.7), 0 0 4px rgba(0, 0, 0, 0.5);
+  }
+}

@@ -44,7 +44,7 @@ const DelhiClock = () => {
     // Remove city name text, keep time and tooltip
     <div className="text-xs font-mono text-muted-foreground" title="Current time in New Delhi">
       {/* <span>New Delhi</span> */}
-      <span className="font-medium">{time}</span>
+      <span className="font-medium">{time}{time && ", New Delhi"}</span>
     </div>
   );
 };

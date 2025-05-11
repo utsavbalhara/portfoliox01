@@ -144,10 +144,18 @@ const config = {
         "cursor-blink": "blink 0.75s step-end infinite",
       },
       fontFamily: {
-        geist: ["var(--font-geist)"],
+        sans: ["'Rethink Sans Variable'", "system-ui", "sans-serif"],
+        heading: ["'Neue Metana'", "serif"],
         outfit: ["var(--font-outfit)"],
         syne: ["var(--font-syne)"],
         thunder: ["THUNDER", "sans-serif"],
+      },
+      fontWeight: {
+        light: '300',
+        normal: '300',
+        medium: '400',
+        semibold: '500',
+        bold: '600',
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
