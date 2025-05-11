@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { Menu, X } from "lucide-react"
@@ -38,51 +38,77 @@ export default function Navbar() {
   const [activeSection, setActiveSection] = useState("home")
   const [blurAmount, setBlurAmount] = useState(0)
   const [bgOpacity, setBgOpacity] = useState(0)
+  const navRef = useRef<HTMLDivElement>(null)
 
+  // Helper to get navbar height with caching
+  const getNavbarHeight = useCallback(() => {
+    if (navRef.current) {
+      return navRef.current.offsetHeight;
+    }
+    return 80; // more reasonable fallback
+  }, []);
+
+  // Improved section detection with better positioning
   const handleScroll = useCallback(throttle(() => {
-    const currentScrollY = window.scrollY;
+    const navbarHeight = getNavbarHeight();
+    const sections = document.querySelectorAll<HTMLElement>("section[id]");
+    let currentSectionId = "home";
+    const scrollY = window.scrollY;
+    const windowHeight = window.innerHeight;
+    const docHeight = document.documentElement.scrollHeight;
     
-    const sections = document.querySelectorAll("section[id]");
-    let currentSectionId = "home"; // Default to home
+    // Check if we're at the bottom of the page
+    const atBottom = Math.abs(windowHeight + scrollY - docHeight) < 5;
+    
+    // Offset for better section detection - slightly higher than the navbar
+    const detectionOffset = navbarHeight + 10;
 
-    sections.forEach((section) => {
-      const sectionTop = (section as HTMLElement).offsetTop - 100; 
-      const sectionHeight = (section as HTMLElement).offsetHeight;
+    // Find the current section
+    for (let i = 0; i < sections.length; i++) {
+      const section = sections[i];
+      const sectionId = section.getAttribute("id") || "";
+      const rect = section.getBoundingClientRect();
+      
+      // Use smaller threshold for better detection
       if (
-        currentScrollY >= sectionTop &&
-        currentScrollY < sectionTop + sectionHeight
+        (rect.top <= detectionOffset && rect.bottom > 0) || 
+        (atBottom && i === sections.length - 1)
       ) {
-        currentSectionId = section.getAttribute("id") || "home";
+        currentSectionId = sectionId;
+        break;
       }
-    });
+    }
 
-    // Update activeSection state
+    // Update active section if changed
     if (activeSection !== currentSectionId) {
       setActiveSection(currentSectionId);
     }
 
-    // Update scrolled state: true if not on "home" section and scrolled down a bit
-    const isScrolled = currentSectionId !== "home" && currentScrollY > 10;
+    // Update scrolled state - use small threshold
+    const isScrolled = scrollY > 20;
     setScrolled(isScrolled);
-    
-    // Calculate blur amount based on scroll position (max 10px blur)
+
+    // Blur and opacity with smoother transitions
     const maxBlur = 10;
-    const scrollThreshold = 200; // Distance to reach max blur
-    const newBlurAmount = Math.min(maxBlur, (currentScrollY / scrollThreshold) * maxBlur);
+    const scrollThreshold = 150; // Reduced for faster transition
+    const newBlurAmount = Math.min(maxBlur, (scrollY / scrollThreshold) * maxBlur);
     setBlurAmount(newBlurAmount);
     
-    // Calculate background opacity based on scroll position (max 0.8)
     const maxOpacity = 0.8;
-    const newBgOpacity = Math.min(maxOpacity, (currentScrollY / scrollThreshold) * maxOpacity);
+    const newBgOpacity = Math.min(maxOpacity, (scrollY / scrollThreshold) * maxOpacity);
     setBgOpacity(newBgOpacity);
-
-  }, 100), [activeSection]);
+  }, 50), [activeSection, getNavbarHeight]);
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll(); // Initial check
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [handleScroll])
+    window.addEventListener("resize", handleScroll, { passive: true });
+    // Initialize on mount
+    setTimeout(handleScroll, 100);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
+    };
+  }, [handleScroll]);
 
   const navItems = [
     { name: "Journey", href: "#journey" },
@@ -98,13 +124,14 @@ export default function Navbar() {
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       className={`fixed top-0 left-0 right-0 w-full z-50 flex items-center justify-between px-6 lg:px-10 py-4 transition-all duration-300 border-b ${
-        scrolled ? 'border-border' : 'border-transparent'
+        scrolled ? 'border-border/30' : 'border-transparent'
       }`}
       style={{
         backdropFilter: `blur(${blurAmount}px)`,
         WebkitBackdropFilter: `blur(${blurAmount}px)`,
         backgroundColor: `hsla(var(--background) / ${bgOpacity})`,
       }}
+      ref={navRef}
     >
       {/* Left side: Empty space to balance with right side */}
       <div className="flex-1 flex items-center justify-start">
@@ -139,18 +166,23 @@ export default function Navbar() {
             {activeSection === item.href.substring(1) && (
               <motion.span
                 layoutId="activeNavIndicator"
-                className="absolute bottom-0 left-0 w-full h-0.5 bg-primary"
-                transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                className="absolute inset-x-0 bottom-0 h-0.5 bg-primary rounded-full mx-1"
+                style={{ bottom: "-2px" }}
+                transition={{ 
+                  type: "spring", 
+                  stiffness: 500, 
+                  damping: 30 
+                }}
               />
             )}
-            {/* Remove the non-scrolled divider since we'll use a dynamic one */}
+            {/* Divider between items */}
             {item.name !== navItems[navItems.length - 1].name && (
               <span 
                 className="absolute right-0 top-1/2 -translate-y-1/2 w-px transition-all duration-300"
                 style={{
-                  height: scrolled ? '3px' : '4px',
-                  opacity: Math.max(0.1, blurAmount / 20),
-                  backgroundColor: `hsla(var(--foreground) / ${Math.max(0.1, blurAmount / 20)})`,
+                  height: scrolled ? '50%' : '4px',
+                  opacity: Math.max(0.1, bgOpacity / 4),
+                  backgroundColor: `hsla(var(--foreground) / ${Math.max(0.1, bgOpacity / 4)})`,
                 }}
               ></span>
             )}
@@ -184,9 +216,13 @@ export default function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="md:hidden fixed inset-x-0 top-0 pt-20 pb-10 bg-background/95 backdrop-blur-lg shadow-lg flex flex-col items-center justify-between z-40"
+            className="md:hidden fixed inset-x-0 top-[72px] pt-6 pb-10 bg-background/95 backdrop-blur-lg shadow-lg flex flex-col items-center justify-between z-40 border-b border-border/30"
+            style={{ 
+              maxHeight: 'calc(100vh - 72px)',
+              overflowY: 'auto'
+            }}
           >
-            <div className="flex flex-col items-center gap-6">
+            <div className="flex flex-col items-center gap-6 w-full">
               {navItems.map((item, index) => (
                 <motion.div
                   key={item.name}
@@ -197,25 +233,30 @@ export default function Navbar() {
                     duration: 0.3,
                     ease: [0.2, 0.6, 0.3, 1]
                   }}
+                  className="w-full text-center"
                 >
                   <Link
                     href={item.href}
-                    className={`text-xl font-medium py-2 px-4 relative transition-colors duration-200 ${activeSection === item.href.substring(1) ? 'text-primary' : 'text-muted-foreground hover:text-primary'}`}
+                    className={`text-xl font-medium py-3 px-4 relative transition-colors duration-200 inline-block ${
+                      activeSection === item.href.substring(1) 
+                        ? 'text-primary' 
+                        : 'text-muted-foreground hover:text-primary'
+                    }`}
                     onClick={() => setIsOpen(false)}
                   >
                     {item.name}
+                    {activeSection === item.href.substring(1) && (
+                      <motion.span
+                        layoutId="mobileActiveIndicator"
+                        className="absolute bottom-1 left-1/2 -translate-x-1/2 h-0.5 bg-primary rounded-full" 
+                        style={{ width: '30%' }}
+                        transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                      />
+                    )}
                   </Link>
                 </motion.div>
               ))}
             </div>
-            
-            <button
-              onClick={() => setIsOpen(false)}
-              className="absolute top-6 right-6 w-9 h-9 flex items-center justify-center rounded-full bg-secondary/30 border border-border"
-              aria-label="Close menu"
-            >
-              <X size={18} />
-            </button>
           </motion.div>
         )}
       </AnimatePresence>
