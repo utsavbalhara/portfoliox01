@@ -20,6 +20,30 @@ export default function CustomCursor() {
   const cursorXSpring = useSpring(cursorX, springConfig)
   const cursorYSpring = useSpring(cursorY, springConfig)
   
+  // Trail effect - create multiple trailing dots
+  const trailDots = 3; // Number of trailing dots
+  
+  // Create a delayed reference for each dot in the trail
+  const trailXSprings = Array.from({ length: trailDots }).map((_, i) => {
+    const delay = (i + 1) * 0.05; // Increasing delay for each dot
+    return useSpring(cursorX, { 
+      ...springConfig,
+      restDelta: 0.001, // Lower value for more precise animations
+      restSpeed: 0.001, // Better rest detection
+      mass: 0.6 + (i * 0.1), // Slightly increasing mass for trail effect
+    })
+  })
+  
+  const trailYSprings = Array.from({ length: trailDots }).map((_, i) => {
+    const delay = (i + 1) * 0.05;
+    return useSpring(cursorY, {
+      ...springConfig,
+      restDelta: 0.001,
+      restSpeed: 0.001,
+      mass: 0.6 + (i * 0.1),
+    })
+  })
+  
   useEffect(() => {
     setMounted(true)
   }, [])
@@ -119,6 +143,26 @@ export default function CustomCursor() {
 
   return (
     <>
+      {/* Trail dots */}
+      {trailDots > 0 && trailXSprings.map((trailX, i) => (
+        <motion.div
+          key={`trail-${i}`}
+          className="fixed top-0 left-0 z-[98] pointer-events-none"
+          style={{
+            x: trailXSprings[i],
+            y: trailYSprings[i],
+            translateX: "-50%",
+            translateY: "-50%",
+            backgroundColor: cursorBaseColor,
+            mixBlendMode: 'difference',
+            borderRadius: '9999px',
+            opacity: 0.3 - (i * 0.08), // Decreasing opacity for trailing dots
+            width: 6 - (i * 1),
+            height: 6 - (i * 1),
+          }}
+        />
+      ))}
+    
       {/* Main cursor dot - Now shrinks on hover w/ blend mode */}
       <motion.div
         className="fixed top-0 left-0 z-[100] pointer-events-none"
@@ -134,7 +178,13 @@ export default function CustomCursor() {
           // Opacity now handled directly in dotStyle for simplicity
           // opacity: isPointer ? (isDarkMode ? 0.9 : 0.8) : (isDarkMode ? 0.8 : 0.7), 
         }}
-        transition={{ duration: 0.15, type: "spring", stiffness: 500, damping: 30 }}
+        transition={{ 
+          duration: 0.15, 
+          type: "spring", 
+          stiffness: 500, 
+          damping: 30,
+          mass: 0.5 // Lower mass for quicker response
+        }}
       />
       
       {/* Cursor ring/circle - Expands more on hover w/ blend mode */}
@@ -150,6 +200,7 @@ export default function CustomCursor() {
           // Use white border for difference blend mode
           borderColor: cursorBaseColor, 
           mixBlendMode: 'difference', // Apply difference blend mode
+          filter: isHovering ? 'blur(0.5px)' : 'none', // Subtle blur on hover
         }}
         animate={{
           // Keep width/height constant regardless of hover
@@ -165,7 +216,34 @@ export default function CustomCursor() {
         transition={{ 
           duration: 0.25, 
           // Adjusted spring for smoother feel (less stiff, more damped)
-          type: "spring", stiffness: 350, damping: 35 
+          type: "spring", 
+          stiffness: 350, 
+          damping: 35,
+          mass: 0.8 // Slightly better response
+        }}
+      />
+      
+      {/* Extra subtle glow effect */}
+      <motion.div
+        className="fixed top-0 left-0 z-[97] pointer-events-none"
+        style={{
+          x: cursorXSpring,
+          y: cursorYSpring,
+          translateX: "-50%",
+          translateY: "-50%",
+          background: 'radial-gradient(circle, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 70%)',
+          width: '60px',
+          height: '60px',
+          borderRadius: '50%',
+          mixBlendMode: 'difference',
+        }}
+        animate={{
+          scale: isHovering ? 1.2 : 1,
+        }}
+        transition={{ 
+          type: "spring", 
+          stiffness: 250, 
+          damping: 35 
         }}
       />
     </>

@@ -28,8 +28,8 @@ export default function Home() {
       
       {/* Main content sections */}
       <HeroSection />
-      <ExperienceSection />
       <AboutSection />
+      <ExperienceSection />
       <ProjectsSection />
       <SkillsSection />
       <ContactSection />

@@ -1,175 +1,561 @@
 "use client"
 
-import { motion } from "framer-motion"
-// Remove useInView and related state if not needed elsewhere
-// import { useInView } from "react-intersection-observer"
-// import { useState, useEffect } from "react"
-import { Code, BookOpen, Coffee, Github } from "lucide-react"
+import { motion, AnimatePresence, useScroll, useTransform, useInView } from "framer-motion"
+import { Code, Music, Film, Dumbbell, Coffee, Laptop, Sparkles } from "lucide-react"
+import { useState, useEffect, useRef } from "react"
 
-// Define reusable animation variants for scroll-triggered effects
-const scrollFadeUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.6,
-      ease: [0.16, 1, 0.3, 1]
-    }
-  }
-}
+// Playlist data with songs from the user's actual playlist
+const playlistSongs = [
+  { title: "As It Was", artist: "Harry Styles", album: "Harry's House" },
+  { title: "Blinding Lights", artist: "The Weeknd", album: "After Hours" },
+  { title: "SICKO MODE", artist: "Travis Scott", album: "ASTROWORLD" },
+  { title: "Yes Indeed", artist: "Lil Baby & Drake", album: "Harder Than Ever" },
+  { title: "Future Nostalgia", artist: "Dua Lipa", album: "Future Nostalgia" }
+];
 
-const scrollScaleUp = {
-  hidden: { opacity: 0, scale: 0.95 },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    transition: {
-      duration: 0.6,
-      ease: [0.16, 1, 0.3, 1]
-    }
-  }
+// Top artists from the user's playlist
+const topArtists = ["The Weeknd", "Drake", "Travis Scott", "Lil Baby", "Future"];
+
+// Gym PRs with current and goal weights
+const gymPRs = [
+  { name: "Deadlift", current: 120, goal: 150, unit: "kg" },
+  { name: "Bench Press", current: 90, goal: 120, unit: "kg" },
+  { name: "Squat", current: 110, goal: 140, unit: "kg" }
+];
+
+// Define particle type
+interface Particle {
+  id: number;
+  x: number;
+  y: number;
+  size: number;
+  duration: number;
+  scale: number;
 }
 
 export default function AboutSection() {
-  // Removed useInView hook
+  // Random song from playlist
+  const [currentSong, setCurrentSong] = useState(playlistSongs[0]);
+  const [songIndex, setSongIndex] = useState(0);
+  const sectionRef = useRef(null);
+  const isInView = useInView(sectionRef, { once: false, amount: 0.1 });
+  
+  // Client-side only state
+  const [isClient, setIsClient] = useState(false);
+  const [particles, setParticles] = useState<Particle[]>([]);
+  
+  // Set up client-side only effects
+  useEffect(() => {
+    setIsClient(true);
+    
+    // Generate particles only on client-side
+    setParticles(
+      Array.from({ length: 20 }, (_, i) => ({
+        id: i,
+        x: Math.random() * 100,
+        y: Math.random() * 100,
+        size: Math.random() * 10 + 2,
+        duration: Math.random() * 20 + 10,
+        scale: Math.random() * 0.5 + 0.5
+      }))
+    );
+  }, []);
+  
+  // Change song with animation
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSongIndex((prev) => (prev + 1) % playlistSongs.length);
+    }, 8000);
+    
+    return () => clearInterval(interval);
+  }, []);
+  
+  useEffect(() => {
+    setCurrentSong(playlistSongs[songIndex]);
+  }, [songIndex]);
+  
+  // Personal interests with icons
+  const interests = [
+    { icon: <Code className="w-5 h-5" />, title: "Coding", description: "Full stack development" },
+    { icon: <Music className="w-5 h-5" />, title: "Music", description: "Electronic to indie" },
+    { icon: <Film className="w-5 h-5" />, title: "Cinema", description: "Film enthusiast" },
+    { icon: <Dumbbell className="w-5 h-5" />, title: "Fitness", description: "Gym & mind-body balance" },
+    { icon: <Coffee className="w-5 h-5" />, title: "Coffee", description: "Specialty brewing" },
+    { icon: <Laptop className="w-5 h-5" />, title: "Open Source", description: "Contributing to projects" }
+  ];
 
-  const highlights = [
-    {
-      icon: <Code className="w-5 h-5" />,
-      title: "Development",
-      description: "Skilled in both frontend and backend technologies with a focus on creating efficient, scalable solutions."
-    },
-    {
-      icon: <BookOpen className="w-5 h-5" />,
-      title: "Learning",
-      description: "Constantly expanding my knowledge and staying updated with the latest industry trends and technologies."
-    },
-    {
-      icon: <Github className="w-5 h-5" />,
-      title: "Open Source",
-      description: "Active contributor to open source projects, sharing knowledge with the developer community."
-    },
-    {
-      icon: <Coffee className="w-5 h-5" />,
-      title: "Work Ethic",
-      description: "Committed to delivering high-quality work with attention to detail and meeting deadlines."
-    }
-  ]
+  // Parallax effect for scroll
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"]
+  });
+  
+  const parallaxY = useTransform(scrollYProgress, [0, 1], [0, -100]);
+  const parallaxOpacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
 
   return (
     <section 
       id="about" 
-      // Removed ref={ref}
-      className="section-animate py-24 scroll-section section-padding relative overflow-hidden"
+      ref={sectionRef}
+      className="section-animate py-20 scroll-section section-padding relative overflow-hidden"
     >
-      {/* Background elements */}
+      {/* Animated background particles - client-side only */}
+      {isClient && (
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {particles.map((particle) => (
+            <motion.div
+              key={particle.id}
+              className="absolute rounded-full bg-primary/5"
+              initial={{ 
+                x: `${particle.x}%`, 
+                y: `${particle.y}%`,
+                scale: particle.scale,
+                width: `${particle.size}px`, 
+                height: `${particle.size}px`
+              }}
+              animate={{ 
+                y: [`${particle.y}%`, `${(particle.y + 20) % 100}%`, `${particle.y}%`],
+                opacity: [0.1, 0.3, 0.1],
+                scale: [particle.scale, particle.scale * 1.2, particle.scale]
+              }}
+              transition={{ 
+                duration: particle.duration, 
+                repeat: Infinity,
+                repeatType: "reverse",
+                ease: "easeInOut"
+              }}
+            />
+          ))}
+        </div>
+      )}
+      
+      {/* Subtle grid background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-40">
+        <div className="absolute inset-0 bg-grid-white/[0.01] bg-[length:20px_20px]" />
+      </div>
+      
+      {/* Atmospheric gradients */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-0 w-full h-full bg-grid-white/[0.02] bg-[length:50px_50px]" />
-        <div className="absolute top-[20%] right-[10%] w-64 h-64 bg-primary/5 rounded-full blur-[100px]" />
-        <div className="absolute bottom-[10%] left-[5%] w-72 h-72 bg-secondary/5 rounded-full blur-[100px]" />
+        <motion.div 
+          className="absolute -top-[40%] -right-[20%] w-[90vw] h-[90vw] rounded-full"
+          animate={{
+            opacity: [0.02, 0.04, 0.02],
+            scale: [1, 1.05, 1]
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          style={{
+            background: "radial-gradient(circle, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0) 70%)",
+          }}
+        />
+        <motion.div 
+          className="absolute -bottom-[50%] -left-[30%] w-[80vw] h-[80vw] rounded-full"
+          animate={{
+            opacity: [0.01, 0.03, 0.01],
+            scale: [1, 1.08, 1]
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 2
+          }}
+          style={{
+            background: "radial-gradient(circle, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0) 60%)",
+          }}
+        />
       </div>
 
-      <div className="container px-4 mx-auto relative z-10">
-        {/* No need for the outer motion container anymore */}
-        <div className="max-w-6xl mx-auto">
-          {/* Animate heading block */}
+      <motion.div 
+        className="container px-4 mx-auto relative z-10"
+        style={{ 
+          y: parallaxY,
+          opacity: parallaxOpacity
+        }}
+      >
+        <div className="max-w-5xl mx-auto space-y-20">
+          {/* Section heading - Enhanced animation */}
           <motion.div 
-            className="mb-12 text-center"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.3 }}
-            variants={scrollFadeUp}
+            className="text-center"
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+            transition={{ duration: 1 }}
           >
-            <h2 className="heading-lg mb-4">
-              About <span className="gradient-text">Me</span>
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              A glimpse into who I am and what drives my passion for development.
-            </p>
+            <motion.h2 
+              className="heading-lg mb-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+              transition={{ duration: 1, delay: 0.2 }}
+            >
+              About{" "}
+              <motion.span 
+                className="gradient-text"
+                initial={{ backgroundSize: "100%" }}
+                animate={{ 
+                  backgroundSize: ["100%", "200%", "100%"],
+                  backgroundPosition: ["0% 0%", "100% 100%", "0% 0%"]
+                }}
+                transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+              >
+                Me
+              </motion.span>
+            </motion.h2>
+            <motion.div 
+              className="h-[1px] w-32 bg-gradient-to-r from-transparent via-primary/30 to-transparent mx-auto mb-8"
+              initial={{ opacity: 0, scaleX: 0 }}
+              animate={isInView ? { opacity: 1, scaleX: 1 } : { opacity: 0, scaleX: 0 }}
+              transition={{ duration: 1.5, delay: 0.6 }}
+            />
+            
+            {/* Minimal Personal Info */}
+            <motion.div 
+              className="flex flex-wrap justify-center items-center gap-2 text-sm text-muted-foreground mb-8"
+              initial={{ opacity: 0 }}
+              animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+            >
+              <span>Delhi, India</span>
+              <span className="mx-1.5 opacity-50">•</span>
+              <span>Full Stack Dev</span>
+              <span className="mx-1.5 opacity-50">•</span>
+              <span>INTJ-T</span>
+            </motion.div>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mt-12">
-            {/* Animate Image block */}
+          {/* Introduction - Bio only */}
+          <div className="grid grid-cols-1 gap-y-8">
+            {/* Bio content with typing animation */}
             <motion.div 
-              className="relative order-2 md:order-1 flex justify-center"
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.3 }}
-              variants={scrollScaleUp} // Use scale animation for image
+              className="space-y-6 max-w-2xl mx-auto text-center"
+              initial={{ opacity: 0 }}
+              animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
             >
-              <div className="relative w-[80%] max-w-sm">
-                <div className="absolute inset-0 border-2 border-primary/20 rounded-2xl transform rotate-3 scale-105" />
-                <div className="absolute inset-0 bg-card/30 backdrop-blur-sm border border-primary/10 rounded-2xl transform -rotate-3 scale-105" />
-                
-                <div className="relative overflow-hidden rounded-2xl border border-primary/20 bg-card/40 backdrop-blur-md shadow-xl">
-                  <img
-                    src="/placeholder.svg?height=600&width=600"
-                    alt="Professional headshot"
-                    className="w-full aspect-square object-cover"
-                  />
-                  
-                  {/* Image overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
-                  
-                  {/* Caption */}
-                  <div className="absolute bottom-0 left-0 w-full p-4">
-                    <h3 className="text-xl font-bold">Aryaman Jaiswal</h3>
-                    <p className="text-sm text-muted-foreground">Full Stack Developer</p>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Animate Content block */}
-            <div className="order-1 md:order-2">
-              {/* Animate text paragraphs individually */}
-              <motion.div
-                className="space-y-6 text-muted-foreground"
-                transition={{ staggerChildren: 0.1 }} 
+              <motion.p 
+                className="text-lg md:text-xl font-light leading-relaxed text-foreground/90"
+                initial={{ opacity: 0 }}
+                animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+                transition={{ duration: 1, delay: 0.8 }}
               >
-                <motion.p variants={scrollFadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
-                  I'm a passionate full-stack developer with a keen eye for design and a commitment to creating intuitive, efficient digital solutions. With expertise in modern web technologies, I build responsive, accessible, and performant applications.
-                </motion.p>
-                <motion.p variants={scrollFadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
-                  My journey in tech began with curiosity about how things work, which evolved into a deep appreciation for the art and science of software development. I believe in writing clean, maintainable code and staying current with emerging technologies.
-                </motion.p>
-                <motion.p variants={scrollFadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
-                  When I'm not coding, you can find me exploring nature trails, experimenting with new recipes, or contributing to open-source projects. I'm always eager to take on new challenges and collaborate on innovative solutions.
-                </motion.p>
-              </motion.div>
-
-              {/* Animate Highlights grid */}
+                I craft digital experiences that blend creativity with functionality. My approach combines clean code with intuitive design, turning complex problems into elegant solutions.
+              </motion.p>
+              
+              <motion.p 
+                className="text-base font-light leading-relaxed text-foreground/80"
+                initial={{ opacity: 0 }}
+                animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+                transition={{ duration: 1, delay: 1.2 }}
+              >
+                When I'm not building the web, you'll find me at the gym, exploring new coffee shops, or getting lost in cinematic universes.
+              </motion.p>
+              
+              {/* Animated Music Integration */}
               <motion.div 
-                className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8"
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, amount: 0.3 }}
-                variants={scrollFadeUp} // Apply base fade-up to the grid container
-                // Stagger animation for individual highlight cards
-                transition={{ staggerChildren: 0.1 }} 
+                className="mt-12 pt-12 border-t border-primary/5"
+                initial={{ opacity: 0, y: 20 }}
+                animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                transition={{ duration: 0.8, delay: 1.4 }}
               >
-                {highlights.map((item, index) => (
-                  // Apply item animation variant here
-                  <motion.div
-                    key={index}
-                    variants={scrollFadeUp} // Each card fades up
-                    className="bg-card/30 backdrop-blur-sm border border-border/50 rounded-xl p-4 hover:bg-card/50 hover:border-border transition-all duration-300"
+                <div className="flex items-center space-x-5 mb-8">
+                  <motion.div 
+                    className="w-16 h-16 bg-primary/5 rounded-full flex items-center justify-center"
+                    animate={{ 
+                      scale: [1, 1.05, 1],
+                      rotate: [0, 5, 0, -5, 0]
+                    }}
+                    transition={{ 
+                      duration: 6, 
+                      repeat: Infinity,
+                      repeatType: "reverse",
+                      ease: "easeInOut"
+                    }}
                   >
-                    <div className="flex items-center mb-2">
-                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mr-3">
-                        {item.icon}
-                      </div>
-                      <h3 className="font-medium">{item.title}</h3>
-                    </div>
-                    <p className="text-sm text-muted-foreground">{item.description}</p>
+                    <Music className="w-6 h-6 text-primary/60" />
                   </motion.div>
-                ))}
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={currentSong.title}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.5 }}
+                    >
+                      <p className="text-xs uppercase tracking-widest text-muted-foreground font-medium mb-1">Now Playing</p>
+                      <p className="text-lg">{currentSong.title}</p>
+                      <p className="text-sm text-muted-foreground">{currentSong.artist}</p>
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
+                
+                <div className="flex flex-wrap gap-2 mt-4">
+                  <motion.a 
+                    href="https://music.apple.com/in/playlist/some-cwazy/pl.u-8aAVZglHmooylEX" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-xs bg-primary/5 hover:bg-primary/10 px-4 py-2 rounded-full text-primary transition-colors duration-300"
+                    whileHover={{ scale: 1.05, backgroundColor: "rgba(var(--primary), 0.15)" }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    some cwazy 🔥
+                  </motion.a>
+                  {topArtists.map((artist, index) => (
+                    <motion.span 
+                      key={index} 
+                      className="text-xs bg-primary/5 px-4 py-2 rounded-full text-muted-foreground"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: 0.1 * index }}
+                      whileHover={{ y: -3, backgroundColor: "rgba(var(--primary), 0.1)" }}
+                    >
+                      {artist}
+                    </motion.span>
+                  ))}
+                </div>
               </motion.div>
-            </div>
+            </motion.div>
           </div>
+
+          {/* Gym PRs - Animated progress bars */}
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-3 gap-8"
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+            transition={{ duration: 0.8 }}
+          >
+            {gymPRs.map((pr, index) => (
+              <motion.div 
+                key={index} 
+                className="relative"
+                initial={{ opacity: 0, x: -20 }}
+                animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
+                transition={{ duration: 0.5, delay: 0.2 * index }}
+                whileHover={{ scale: 1.03 }}
+              >
+                <p className="text-xs uppercase tracking-widest text-muted-foreground font-medium mb-4">{pr.name}</p>
+                <div className="flex items-baseline space-x-2">
+                  <motion.span 
+                    className="text-4xl font-light"
+                    initial={{ opacity: 0 }}
+                    animate={isInView ? 
+                      { opacity: 1, scale: [0.9, 1.1, 1] } : 
+                      { opacity: 0 }
+                    }
+                    transition={{ duration: 0.8, delay: 0.3 + index * 0.2 }}
+                  >
+                    {pr.current}
+                  </motion.span>
+                  <span className="text-muted-foreground text-lg">/</span>
+                  <span className="text-muted-foreground text-lg">{pr.goal} {pr.unit}</span>
+                </div>
+                <div className="mt-4 h-[6px] bg-primary/10 overflow-hidden rounded-full">
+                  <motion.div 
+                    className="h-full bg-primary/50"
+                    initial={{ width: 0 }}
+                    animate={isInView ? { width: `${(pr.current / pr.goal) * 100}%` } : { width: 0 }}
+                    transition={{ 
+                      duration: 1.5, 
+                      delay: 0.5 + index * 0.3, 
+                      ease: "easeOut" 
+                    }}
+                  />
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          {/* Film - Enhanced interactive element */}
+          <motion.div 
+            className="flex flex-col md:flex-row items-center justify-between gap-8 md:gap-16"
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+            transition={{ duration: 0.8 }}
+            whileHover={{ scale: 1.02 }}
+          >
+            <motion.div 
+              className="w-24 h-24 bg-primary/5 rounded-full flex items-center justify-center flex-shrink-0"
+              animate={{ 
+                rotate: [0, 360],
+              }}
+              transition={{ 
+                duration: 20,
+                repeat: Infinity,
+                ease: "linear"
+              }}
+            >
+              <Film className="w-8 h-8 text-primary/60" />
+            </motion.div>
+            
+            <div className="flex-grow">
+              <motion.p 
+                className="text-xs uppercase tracking-widest text-muted-foreground font-medium mb-4"
+                initial={{ opacity: 0 }}
+                animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+                transition={{ duration: 0.4, delay: 0.2 }}
+              >
+                Cinema Obsession
+              </motion.p>
+              <motion.p 
+                className="text-lg font-light mb-6"
+                initial={{ opacity: 0 }}
+                animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+                transition={{ duration: 0.4, delay: 0.4 }}
+              >
+                Avid film enthusiast with a growing collection of reviews and ratings.
+              </motion.p>
+              <motion.a 
+                href="https://letterboxd.com/yourusername" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-sm bg-primary/5 hover:bg-primary/10 px-6 py-3 rounded-full text-foreground inline-block transition-colors duration-300"
+                whileHover={{ 
+                  scale: 1.05,
+                  backgroundColor: "rgba(var(--primary), 0.15)"
+                }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <div className="flex items-center">
+                  <motion.div
+                    animate={{ rotate: [0, 10, 0, -10, 0] }}
+                    transition={{ 
+                      duration: 2,
+                      repeat: Infinity,
+                      repeatType: "loop"
+                    }}
+                  >
+                    <Film className="w-4 h-4 mr-3" />
+                  </motion.div>
+                  <span>Letterboxd Profile</span>
+                </div>
+              </motion.a>
+            </div>
+          </motion.div>
+
+          {/* Interests - Staggered and interactive cards */}
+          <motion.div 
+            className="space-y-12"
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+            transition={{ duration: 0.8 }}
+          >
+            <div className="text-center max-w-md mx-auto">
+              <motion.p 
+                className="text-xs uppercase tracking-widest text-muted-foreground font-medium mb-4"
+                initial={{ opacity: 0 }}
+                animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+                transition={{ duration: 0.4 }}
+              >
+                Interests & Passions
+              </motion.p>
+              <motion.p 
+                className="text-lg font-light text-foreground/80"
+                initial={{ opacity: 0 }}
+                animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+                transition={{ duration: 0.4, delay: 0.2 }}
+              >
+                A glimpse into the things that drive me beyond coding
+              </motion.p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-x-8 gap-y-8">
+              {interests.map((item, index) => {
+                // Create a varied layout that feels intentional
+                const sizes = [
+                  "md:col-span-6", // Coding
+                  "md:col-span-3", // Music
+                  "md:col-span-3", // Cinema
+                  "md:col-span-4", // Fitness
+                  "md:col-span-4", // Coffee
+                  "md:col-span-4", // Open Source
+                ];
+
+                return (
+                  <motion.div 
+                    key={index}
+                    className={`group ${sizes[index]}`}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                    transition={{ duration: 0.6, delay: 0.1 * index }}
+                    whileHover={{ 
+                      scale: 1.03,
+                      y: -5
+                    }}
+                  >
+                    <motion.div 
+                      className="bg-card/30 hover:bg-card/40 backdrop-blur-sm p-6 rounded-2xl h-full transition-all duration-300"
+                      whileHover={{ 
+                        boxShadow: "0 10px 30px -15px rgba(var(--primary), 0.15)"
+                      }}
+                    >
+                      <div className="flex items-center mb-3">
+                        <motion.div 
+                          className="w-8 h-8 flex items-center justify-center text-primary mr-4 transition-all duration-300 group-hover:text-primary"
+                          animate={{ 
+                            scale: [1, 1.1, 1],
+                            rotate: [0, 5, 0, -5, 0]
+                          }}
+                          transition={{ 
+                            duration: 6, 
+                            delay: index * 0.2,
+                            repeat: Infinity,
+                            repeatType: "reverse"
+                          }}
+                        >
+                          {item.icon}
+                        </motion.div>
+                        <h4 className="text-lg">{item.title}</h4>
+                      </div>
+                      <p className="text-muted-foreground font-light group-hover:text-foreground transition-colors duration-300">
+                        {item.description}
+                      </p>
+                    </motion.div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </motion.div>
+          
+          {/* Sparkles effect - client-side only */}
+          {isClient && (
+            <motion.div 
+              className="absolute inset-0 pointer-events-none"
+              style={{ zIndex: 5 }}
+            >
+              {Array.from({ length: 15 }).map((_, i) => {
+                const left = i * 6.67; // Deterministic positions instead of random
+                const top = (i * 7.5) % 100;
+                const delay = i * 1.2;
+                
+                return (
+                  <motion.div
+                    key={`sparkle-${i}`}
+                    className="absolute"
+                    style={{
+                      left: `${left}%`,
+                      top: `${top}%`,
+                    }}
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={{
+                      opacity: [0, 0.8, 0],
+                      scale: [0, 1, 0],
+                    }}
+                    transition={{
+                      duration: 2,
+                      delay: delay,
+                      repeat: Infinity,
+                      repeatDelay: 10,
+                    }}
+                  >
+                    <Sparkles className="w-3 h-3 text-primary/50" />
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+          )}
         </div>
-      </div>
+      </motion.div>
     </section>
   )
 }
