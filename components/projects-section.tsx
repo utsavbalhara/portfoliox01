@@ -30,7 +30,12 @@ const scrollFadeUp = {
   }
 }
 
-export default function ProjectsSection() {
+// Add new prop type for onVisibilityChange
+interface ProjectsSectionProps {
+  onVisibilityChange?: (isVisible: boolean) => void;
+}
+
+export default function ProjectsSection({ onVisibilityChange }: ProjectsSectionProps) {
   const { ref, inView } = useInView({
     triggerOnce: false,
     threshold: 0.1,
@@ -86,6 +91,13 @@ export default function ProjectsSection() {
       githubUrl: "#",
     },
   ]
+
+  // Call the callback when inView status changes
+  useEffect(() => {
+    if (onVisibilityChange) {
+      onVisibilityChange(inView);
+    }
+  }, [inView, onVisibilityChange]);
 
   return (
     <section 

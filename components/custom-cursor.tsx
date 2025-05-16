@@ -15,32 +15,36 @@ export default function CustomCursor() {
   const cursorX = useMotionValue(-100)
   const cursorY = useMotionValue(-100)
   
-  // Apply spring physics for smooth motion
-  const springConfig = { damping: 25, stiffness: 300 }
+  // Apply spring physics for smooth motion - premium feel
+  const springConfig = { 
+    damping: 25, // Balanced damping for smooth movement
+    stiffness: 300, // Moderate stiffness for natural feel
+    mass: 0.8, // Slightly heavier mass for premium feel
+    restDelta: 0.001,
+    restSpeed: 0.001
+  }
   const cursorXSpring = useSpring(cursorX, springConfig)
   const cursorYSpring = useSpring(cursorY, springConfig)
   
-  // Trail effect - create multiple trailing dots
-  const trailDots = 3; // Number of trailing dots
+  // Trail effect - premium trail
+  const trailDots = 3; // More dots for richer trail effect
   
-  // Create a delayed reference for each dot in the trail
+  // Create a delayed reference for each dot in the trail - premium spring configs
   const trailXSprings = Array.from({ length: trailDots }).map((_, i) => {
-    const delay = (i + 1) * 0.05; // Increasing delay for each dot
     return useSpring(cursorX, { 
       ...springConfig,
-      restDelta: 0.001, // Lower value for more precise animations
-      restSpeed: 0.001, // Better rest detection
-      mass: 0.6 + (i * 0.1), // Slightly increasing mass for trail effect
+      damping: 30 + (i * 5), // Progressive damping for smooth trail
+      stiffness: 250 - (i * 30), // Progressive stiffness reduction
+      mass: 0.7 + (i * 0.15), // Progressive mass increase for trail effect
     })
   })
   
   const trailYSprings = Array.from({ length: trailDots }).map((_, i) => {
-    const delay = (i + 1) * 0.05;
     return useSpring(cursorY, {
       ...springConfig,
-      restDelta: 0.001,
-      restSpeed: 0.001,
-      mass: 0.6 + (i * 0.1),
+      damping: 30 + (i * 5),
+      stiffness: 250 - (i * 30),
+      mass: 0.7 + (i * 0.15),
     })
   })
   
@@ -51,25 +55,34 @@ export default function CustomCursor() {
   useEffect(() => {
     if (!mounted) return
     
-    // Handle cursor position
+    // Optimized event handler with requestAnimationFrame
+    let rafId: number;
     const handleMouseMove = (e: MouseEvent) => {
-      cursorX.set(e.clientX)
-      cursorY.set(e.clientY)
+      // Cancel any pending animation frame
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+      }
       
-      // Check element under cursor for hover states
-      const target = e.target as Element
-      
-      // Check for interactive elements
-      const isInteractive = 
-        target.tagName === "A" || 
-        target.tagName === "BUTTON" || 
-        target.closest("a") || 
-        target.closest("button") || 
-        target.classList.contains("clickable") ||
-        window.getComputedStyle(target).cursor === "pointer"
+      // Schedule the update for the next frame
+      rafId = requestAnimationFrame(() => {
+        cursorX.set(e.clientX)
+        cursorY.set(e.clientY)
         
-      setIsPointer(isInteractive)
-      setIsHovering(isInteractive)
+        // Check element under cursor for hover states
+        const target = e.target as Element
+        
+        // Optimized interactive element check
+        const isInteractive = 
+          target.tagName === "A" || 
+          target.tagName === "BUTTON" || 
+          target.closest("a") || 
+          target.closest("button") || 
+          target.classList.contains("clickable") ||
+          window.getComputedStyle(target).cursor === "pointer"
+          
+        setIsPointer(isInteractive)
+        setIsHovering(isInteractive)
+      })
     }
     
     // Check for cursor style changes
@@ -127,23 +140,22 @@ export default function CustomCursor() {
   
   // Use white for difference blend mode
   const cursorBaseColor = "#FFFFFF";
-  const dotOpacityDefault = 0.8;
-  const ringOpacityDefault = 0.3;
+  const dotOpacityDefault = 0.85; // Slightly higher base opacity
+  const ringOpacityDefault = 0.35; // Slightly higher ring opacity
   
-  // Styles for the main cursor dot
+  // Styles for the main cursor dot - premium feel
   const dotStyle = {
-    // Make dot LARGER on hover
-    height: isPointer ? '14px' : '10px', 
-    width: isPointer ? '14px' : '10px', 
+    height: isPointer ? '14px' : '10px', // Larger dot for better visibility
+    width: isPointer ? '14px' : '10px',
     backgroundColor: cursorBaseColor, 
-    opacity: isPointer ? 0.9 : dotOpacityDefault, // Keep opacity high on hover for now
+    opacity: isPointer ? 1 : dotOpacityDefault, // Full opacity on hover
     borderRadius: '9999px', 
-    mixBlendMode: 'difference', // Apply difference blend mode
-  } as const; // Use 'as const' for type safety with mixBlendMode
+    mixBlendMode: 'difference',
+  } as const;
 
   return (
     <>
-      {/* Trail dots */}
+      {/* Trail dots - premium rendering */}
       {trailDots > 0 && trailXSprings.map((trailX, i) => (
         <motion.div
           key={`trail-${i}`}
@@ -156,14 +168,14 @@ export default function CustomCursor() {
             backgroundColor: cursorBaseColor,
             mixBlendMode: 'difference',
             borderRadius: '9999px',
-            opacity: 0.3 - (i * 0.08), // Decreasing opacity for trailing dots
-            width: 6 - (i * 1),
-            height: 6 - (i * 1),
+            opacity: 0.45 - (i * 0.12), // Richer trail opacity
+            width: 7 - (i * 1.2), // Slightly larger trail dots
+            height: 7 - (i * 1.2),
           }}
         />
       ))}
     
-      {/* Main cursor dot - Now shrinks on hover w/ blend mode */}
+      {/* Main cursor dot - premium animation */}
       <motion.div
         className="fixed top-0 left-0 z-[100] pointer-events-none"
         style={{
@@ -174,76 +186,43 @@ export default function CustomCursor() {
           ...dotStyle
         }}
         animate={{
-          scale: isHovering ? 1.1 : 1, 
-          // Opacity now handled directly in dotStyle for simplicity
-          // opacity: isPointer ? (isDarkMode ? 0.9 : 0.8) : (isDarkMode ? 0.8 : 0.7), 
+          scale: isHovering ? 1.2 : 1, // More pronounced scale change
         }}
         transition={{ 
-          duration: 0.15, 
+          duration: 0.2, // Slightly longer for smoother feel
           type: "spring", 
-          stiffness: 500, 
-          damping: 30,
-          mass: 0.5 // Lower mass for quicker response
+          stiffness: 400, // Balanced stiffness
+          damping: 30, // Balanced damping
+          mass: 0.7 // Heavier mass for premium feel
         }}
       />
       
-      {/* Cursor ring/circle - Expands more on hover w/ blend mode */}
+      {/* Cursor ring/circle - premium animation */}
       <motion.div
         ref={cursorRef}
-        // Removed theme-based border color class
         className={`fixed top-0 left-0 z-[99] rounded-full pointer-events-none border`}
         style={{
           x: cursorXSpring,
           y: cursorYSpring,
           translateX: "-50%",
           translateY: "-50%",
-          // Use white border for difference blend mode
           borderColor: cursorBaseColor, 
-          mixBlendMode: 'difference', // Apply difference blend mode
-          filter: isHovering ? 'blur(0.5px)' : 'none', // Subtle blur on hover
-        }}
-        animate={{
-          // Keep width/height constant regardless of hover
-          width: "30px", 
-          height: "30px", 
-          // Keep opacity constant regardless of hover
-          opacity: ringOpacityDefault, 
-          // Keep scale animation subtle
-          scale: isHovering ? 1.05 : 1, 
-          // Keep border width constant regardless of hover
-          borderWidth: "1px", 
-        }}
-        transition={{ 
-          duration: 0.25, 
-          // Adjusted spring for smoother feel (less stiff, more damped)
-          type: "spring", 
-          stiffness: 350, 
-          damping: 35,
-          mass: 0.8 // Slightly better response
-        }}
-      />
-      
-      {/* Extra subtle glow effect */}
-      <motion.div
-        className="fixed top-0 left-0 z-[97] pointer-events-none"
-        style={{
-          x: cursorXSpring,
-          y: cursorYSpring,
-          translateX: "-50%",
-          translateY: "-50%",
-          background: 'radial-gradient(circle, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 70%)',
-          width: '60px',
-          height: '60px',
-          borderRadius: '50%',
           mixBlendMode: 'difference',
+          filter: 'none',
         }}
         animate={{
-          scale: isHovering ? 1.2 : 1,
+          width: "32px", // Larger ring
+          height: "32px",
+          opacity: ringOpacityDefault,
+          scale: isHovering ? 1.15 : 1, // More pronounced scale change
+          borderWidth: "1.5px", // Slightly thicker border
         }}
         transition={{ 
+          duration: 0.25, // Longer duration for smoother feel
           type: "spring", 
-          stiffness: 250, 
-          damping: 35 
+          stiffness: 300, // Softer spring
+          damping: 35, // More damping for smoother motion
+          mass: 0.8 // Heavier mass for premium feel
         }}
       />
     </>

@@ -1,3 +1,5 @@
+'use client';
+
 import Navbar from "@/components/navbar"
 import HeroSection from "@/components/hero-section"
 import AboutSection from "@/components/about-section"
@@ -10,8 +12,11 @@ import CustomCursor from "@/components/custom-cursor"
 import ScrollAnimations from "@/components/scroll-animations"
 import BackgroundEffect from "@/components/background-effect"
 import ScrollToTop from "@/components/scroll-to-top"
+import { useState } from "react"
 
 export default function Home() {
+  const [isProjectsSectionVisible, setIsProjectsSectionVisible] = useState(false);
+
   return (
     <main className="min-h-screen overflow-x-hidden">
       {/* Dynamic background effect */}
@@ -29,8 +34,8 @@ export default function Home() {
       {/* Main content sections */}
       <HeroSection />
       <AboutSection />
-      <ExperienceSection />
-      <ProjectsSection />
+      <ExperienceSection disableTimelineHover={isProjectsSectionVisible} />
+      <ProjectsSection onVisibilityChange={setIsProjectsSectionVisible} />
       <SkillsSection />
       <ContactSection />
       
