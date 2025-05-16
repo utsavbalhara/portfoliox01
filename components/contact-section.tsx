@@ -89,8 +89,8 @@ export default function ContactSection() {
       {/* Background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 left-0 w-full h-full bg-grid-white/[0.02] bg-[length:50px_50px]" />
-        <div className="absolute top-[30%] right-[5%] w-80 h-80 bg-primary/5 rounded-full blur-[120px]" />
-        <div className="absolute bottom-[20%] left-[10%] w-96 h-96 bg-secondary/5 rounded-full blur-[150px]" />
+        {/* <div className="absolute top-[30%] right-[5%] w-80 h-80 bg-primary/5 rounded-full blur-[120px]" /> */}
+        {/* <div className="absolute bottom-[20%] left-[10%] w-96 h-96 bg-secondary/5 rounded-full blur-[150px]" /> */}
       </div>
 
       <div className="container px-4 mx-auto relative z-10">

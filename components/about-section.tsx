@@ -153,40 +153,6 @@ export default function AboutSection() {
         <div className="absolute inset-0 bg-grid-white/[0.01] bg-[length:20px_20px]" />
       </div>
       
-      {/* Atmospheric gradients */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <motion.div 
-          className="absolute -top-[40%] -right-[20%] w-[90vw] h-[90vw] rounded-full"
-          animate={{
-            opacity: [0.02, 0.04, 0.02],
-            scale: [1, 1.05, 1]
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-          style={{
-            background: "radial-gradient(circle, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0) 70%)",
-          }}
-        />
-        <motion.div 
-          className="absolute -bottom-[50%] -left-[30%] w-[80vw] h-[80vw] rounded-full"
-          animate={{
-            opacity: [0.01, 0.03, 0.01],
-            scale: [1, 1.08, 1]
-          }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 2
-          }}
-          style={{
-            background: "radial-gradient(circle, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0) 60%)",
-          }}
-        />
-      </div>
 
       <motion.div 
         className="container px-4 mx-auto relative z-10"
