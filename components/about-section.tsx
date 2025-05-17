@@ -13,14 +13,17 @@ const playlistSongs = [
   { title: "Future Nostalgia", artist: "Dua Lipa", album: "Future Nostalgia" }
 ];
 
-// Define particle type
-interface Particle {
-  id: number;
-  x: number;
-  y: number;
-  size: number;
-  duration: number;
-  scale: number;
+// Refined animation variant (subtler)
+const scrollFadeUp = {
+  hidden: { opacity: 0, y: 20 }, // Reduced y offset
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6, // Slightly faster duration
+      ease: [0.16, 1, 0.3, 1] // Standard ease
+    }
+  }
 }
 
 // Define SubJourney Item type (NEW)
@@ -67,27 +70,14 @@ export default function AboutSection() {
   const [currentSong, setCurrentSong] = useState(playlistSongs[0]);
   const [songIndex, setSongIndex] = useState(0);
   const sectionRef = useRef(null);
-  const isInView = useInView(sectionRef, { once: false, amount: 0.1 });
+  const isInView = useInView(sectionRef, { once: true, amount: 0.3 });
   
   // Client-side only state
   const [isClient, setIsClient] = useState(false);
-  const [particles, setParticles] = useState<Particle[]>([]);
   
   // Set up client-side only effects
   useEffect(() => {
     setIsClient(true);
-    
-    // Generate particles only on client-side
-    setParticles(
-      Array.from({ length: 20 }, (_, i) => ({
-        id: i,
-        x: Math.random() * 100,
-        y: Math.random() * 100,
-        size: Math.random() * 10 + 2,
-        duration: Math.random() * 20 + 10,
-        scale: Math.random() * 0.5 + 0.5
-      }))
-    );
   }, []);
   
   // Change song with animation
@@ -109,50 +99,21 @@ export default function AboutSection() {
     offset: ["start end", "end start"]
   });
   
-  const parallaxY = useTransform(scrollYProgress, [0, 1], [0, -100]);
-  const parallaxOpacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
+  const parallaxY = useTransform(scrollYProgress, [0, 1], [0, -50]);
+  const parallaxOpacity = useTransform(scrollYProgress, [0, 0.3], [0, 1]);
 
   return (
     <section 
       id="about" 
       ref={sectionRef}
-      className="section-animate py-20 scroll-section section-padding relative overflow-hidden"
+      className="section-animate py-24 scroll-section section-padding relative overflow-hidden"
     >
-      {/* Animated background particles - client-side only */}
-      {isClient && (
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          {particles.map((particle) => (
-            <motion.div
-              key={particle.id}
-              className="absolute rounded-full bg-primary/5"
-              initial={{ 
-                x: `${particle.x}%`, 
-                y: `${particle.y}%`,
-                scale: particle.scale,
-                width: `${particle.size}px`, 
-                height: `${particle.size}px`
-              }}
-              animate={{ 
-                y: [`${particle.y}%`, `${(particle.y + 20) % 100}%`, `${particle.y}%`],
-                opacity: [0.1, 0.3, 0.1],
-                scale: [particle.scale, particle.scale * 1.2, particle.scale]
-              }}
-              transition={{ 
-                duration: particle.duration, 
-                repeat: Infinity,
-                repeatType: "reverse",
-                ease: "easeInOut"
-              }}
-            />
-          ))}
-        </div>
-      )}
-      
-      {/* Subtle grid background */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-40">
-        <div className="absolute inset-0 bg-grid-white/[0.01] bg-[length:20px_20px]" />
+      {/* Background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 left-0 w-full h-full bg-grid-white/[0.02] bg-[length:50px_50px]" />
+        {/* <div className="absolute top-[15%] left-[5%] w-72 h-72 bg-secondary/5 rounded-full blur-[100px]" /> */}
+        {/* <div className="absolute bottom-[20%] right-[10%] w-64 h-64 bg-primary/5 rounded-full blur-[100px]" /> */}
       </div>
-      
 
       <motion.div 
         className="container px-4 mx-auto relative z-10"
@@ -165,15 +126,14 @@ export default function AboutSection() {
           {/* Section heading - Enhanced animation */}
           <motion.div 
             className="text-center"
-            initial={{ opacity: 0 }}
-            animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-            transition={{ duration: 1 }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={scrollFadeUp}
           >
             <motion.h2 
               className="heading-lg mb-6"
-              initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-              transition={{ duration: 1, delay: 0.2 }}
+              variants={scrollFadeUp}
             >
               About{" "}
               <motion.span 
@@ -190,17 +150,13 @@ export default function AboutSection() {
             </motion.h2>
             <motion.div 
               className="h-[1px] w-32 bg-gradient-to-r from-transparent via-primary/30 to-transparent mx-auto mb-8"
-              initial={{ opacity: 0, scaleX: 0 }}
-              animate={isInView ? { opacity: 1, scaleX: 1 } : { opacity: 0, scaleX: 0 }}
-              transition={{ duration: 1.5, delay: 0.6 }}
+              variants={scrollFadeUp}
             />
             
             {/* Minimal Personal Info */}
             <motion.div 
               className="flex flex-wrap justify-center items-center gap-2 text-sm text-muted-foreground mb-8"
-              initial={{ opacity: 0 }}
-              animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
+              variants={scrollFadeUp}
             >
               <span>Delhi, India</span>
               <span className="mx-1.5 opacity-50">•</span>
@@ -215,24 +171,21 @@ export default function AboutSection() {
             {/* Bio content with typing animation */}
             <motion.div 
               className="space-y-6 max-w-2xl mx-auto text-center"
-              initial={{ opacity: 0 }}
-              animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-              transition={{ duration: 0.8, delay: 0.6 }}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.3 }}
+              variants={scrollFadeUp}
             >
               <motion.p 
                 className="text-lg md:text-xl font-light leading-relaxed text-foreground/90"
-                initial={{ opacity: 0 }}
-                animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-                transition={{ duration: 1, delay: 0.8 }}
+                variants={scrollFadeUp}
               >
                 I craft digital experiences that blend creativity with functionality. My approach combines clean code with intuitive design, turning complex problems into elegant solutions.
               </motion.p>
               
               <motion.p 
                 className="text-base font-light leading-relaxed text-foreground/80"
-                initial={{ opacity: 0 }}
-                animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-                transition={{ duration: 1, delay: 1.2 }}
+                variants={scrollFadeUp}
               >
                 When I'm not building the web, you'll find me at the gym, exploring new coffee shops, or getting lost in cinematic universes.
               </motion.p>

@@ -27,7 +27,7 @@ export default function CustomCursor() {
   const cursorYSpring = useSpring(cursorY, springConfig)
   
   // Trail effect - premium trail
-  const trailDots = 3; // More dots for richer trail effect
+  const trailDots = 0; // Changed from 3 to 0 to disable trail dots
   
   // Create a delayed reference for each dot in the trail - premium spring configs
   const trailXSprings = Array.from({ length: trailDots }).map((_, i) => {

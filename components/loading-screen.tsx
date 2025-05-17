@@ -194,7 +194,7 @@ export default function LoadingScreen() {
             
             {/* Percentage Text - reverted to previous style */}
             <motion.div
-              className="absolute -right-1 top-1/2 -translate-y-1/2 ml-4 text-xs font-mono font-medium text-primary/90"
+              className="absolute -right-1 top-5 ml-4 text-xs font-mono font-medium text-primary/90"
               key={Math.round(progress)}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
