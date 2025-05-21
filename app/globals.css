@@ -185,17 +185,20 @@
     position: relative;
     overflow: hidden;
     border-radius: 0.75rem;
-    transition: all 0.3s ease-out; /* Smoother ease */
-    background-color: hsl(var(--card) / 0.95);
-    border: 2px solid hsl(var(--border));
-    backdrop-filter: blur(6px);
-    font-weight: 400;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    background-color: #181818;
+    border: 2px solid #222;
+    color: #fff;
+    font-weight: 500;
+    box-shadow: none;
   }
   
   .project-card:hover {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    box-shadow: 0 0 15px hsl(var(--primary) / 0.2);
-    transform: translateY(-0.125rem) scale(1.02); /* Smaller lift, slight scale */
+    background-color: #222;
+    border-color: #fff;
+    color: #fff;
+    box-shadow: none;
+    transform: scale(1.015);
   }
 
   .nav-pill {
@@ -287,9 +290,41 @@
   }
   
   .glass-card:hover {
-    box-shadow: 0 12px 18px -3px rgba(0, 0, 0, 0.15), 0 6px 8px -2px rgba(0, 0, 0, 0.1); /* hover:shadow-lg */
-    background-color: hsl(var(--card) / 0.95); /* hover:bg-card/75 */
-    border-color: hsl(var(--border) / 0.9); /* hover:border-border/80 */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    border-color: hsl(var(--primary) / 0.5);
+    transform: translateY(-0.25rem);
+  }
+
+  /* Expertise Skill Chip Styles */
+  .skill-chip {
+    display: inline-block;
+    margin: 0.2rem 0.35rem 0.2rem 0;
+    padding: 0.35em 0.9em;
+    font-size: 0.97em;
+    font-weight: 500;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.07);
+    border: 1.5px solid hsl(var(--border) / 0.25);
+    color: hsl(var(--primary));
+    box-shadow: 0 2px 8px 0 rgba(0,0,0,0.08);
+    backdrop-filter: blur(4px);
+    transition: background 0.22s cubic-bezier(0.4,0.2,0.2,1), color 0.22s, box-shadow 0.22s, transform 0.18s;
+    cursor: default;
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+    animation: chip-fade-in 0.55s cubic-bezier(0.22,0.68,0.45,1.01) forwards;
+  }
+  .skill-chip:hover {
+    background: rgba(255,255,255,0.13);
+    color: hsl(var(--primary-foreground));
+    box-shadow: 0 4px 16px 0 rgba(255,255,255,0.10), 0 2px 8px 0 rgba(0,0,0,0.13);
+    transform: translateY(-2px) scale(1.04);
+  }
+  @keyframes chip-fade-in {
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
   }
 }
 

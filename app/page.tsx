@@ -12,10 +12,22 @@ import CustomCursor from "@/components/custom-cursor"
 import ScrollAnimations from "@/components/scroll-animations"
 import BackgroundEffect from "@/components/background-effect"
 import ScrollToTop from "@/components/scroll-to-top"
-import { useState } from "react"
+import LoadingScreen from "@/components/loading-screen"
+import { useState, useEffect } from "react"
 
 export default function Home() {
   const [isProjectsSectionVisible, setIsProjectsSectionVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate loading screen duration (match your loading-screen exit duration)
+    const timer = setTimeout(() => setIsLoading(false), 2200);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
 
   return (
     <main className="min-h-screen overflow-x-hidden">
@@ -35,12 +47,12 @@ export default function Home() {
       <HeroSection />
       <AboutSection />
       <ExperienceSection disableTimelineHover={isProjectsSectionVisible} />
-      <ProjectsSection onVisibilityChange={setIsProjectsSectionVisible} />
+      <ProjectsSection
+        key={isLoading ? "loading" : "loaded"}
+        onVisibilityChange={setIsProjectsSectionVisible}
+      />
       <SkillsSection />
       <ContactSection />
-      
-      {/* Footer */}
-      <Footer />
       
       {/* Scroll to top button */}
       <ScrollToTop />

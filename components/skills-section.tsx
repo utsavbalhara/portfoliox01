@@ -80,43 +80,39 @@ export default function SkillsSection() {
 
         {/* Expertise Grid */}
         <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.1 }}
-          transition={{ staggerChildren: 0.15 }}
+          transition={{ staggerChildren: 0.13 }}
         >
           {expertiseData.map((area, index) => (
             <motion.div
               key={index}
               variants={scrollFadeUp}
-              whileHover={{ scale: 1.02, y: -4 }}
-              transition={{ type: "spring", stiffness: 300, damping: 15 }}
-              className="glass-card p-6 h-full flex flex-col border border-border/30 rounded-xl overflow-hidden shadow-sm hover:shadow-lg hover:border-border/60 transition-all duration-300 ease-in-out"
+              className="glass-card p-8 h-full flex flex-col border border-border/30 rounded-2xl overflow-hidden shadow-md hover:shadow-lg hover:border-border/60 transition-all duration-300 ease-in-out relative group"
             >
-              <div className="flex items-start mb-3">
-                <div className={`w-10 h-10 rounded-lg flex items-center justify-center mr-4 text-primary flex-shrink-0 ${area.highlightClass ? area.highlightClass.replace('text-', 'bg-').replace('/90', '/10').replace('/100', '/10') : 'bg-primary/10'}`}>
+              <div className="absolute inset-0 border-[3px] border-white/0 transition-all duration-300 ease-out group-hover:border-white/40 rounded-2xl group-hover:shadow-[0_0_20px_rgba(255,255,255,0.15)]" />
+              <div className="flex items-center mb-5">
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center mr-4 bg-white/5 backdrop-blur-md border border-border/30 shadow-sm ${area.highlightClass ? area.highlightClass.replace('text-', 'bg-').replace('/90', '/10').replace('/100', '/10') : 'bg-primary/10'}`}
+                >
                   {area.icon}
                 </div>
-                <div className="flex-grow">
-                  <h3 className={`text-xl font-bold mb-1 ${area.highlightClass || 'gradient-text'}`}>
-                    {area.title}
-                  </h3>
-                </div>
+                <h3 className={`text-2xl font-bold tracking-tight ${area.highlightClass || 'gradient-text'}`}>{area.title}</h3>
               </div>
 
-              <div className="mb-4 flex flex-wrap">
+              <div className="mb-6 flex flex-wrap gap-2">
                 {area.skills.map((skill, skillIndex) => (
-                  <span 
-                    key={skillIndex} 
-                    className="skill-chip"
+                  <span
+                    key={skillIndex}
+                    className="rounded-full bg-primary/10 text-primary px-3 py-1 text-xs font-semibold shadow-sm border border-primary/20 transition-all duration-150"
                   >
                     {skill}
                   </span>
                 ))}
               </div>
 
-              <p className="text-sm text-muted-foreground flex-grow leading-relaxed">
+              <p className="text-base text-muted-foreground flex-grow leading-relaxed max-w-md">
                 {area.description}
               </p>
             </motion.div>

@@ -60,18 +60,20 @@ export default function Navbar() {
     // Check if we're at the bottom of the page
     const atBottom = Math.abs(windowHeight + scrollY - docHeight) < 5;
     
-    // Offset for better section detection - slightly higher than the navbar
-    const detectionOffset = navbarHeight + 10;
+    // Increased offset for better section detection
+    const detectionOffset = navbarHeight + 100; // Increased from 10 to 100
 
-    // Find the current section
+    // Find the current section with improved logic
     for (let i = 0; i < sections.length; i++) {
       const section = sections[i];
       const sectionId = section.getAttribute("id") || "";
       const rect = section.getBoundingClientRect();
+      const sectionTop = rect.top + window.scrollY;
+      const sectionBottom = sectionTop + rect.height;
       
-      // Use smaller threshold for better detection
+      // More precise section detection
       if (
-        (rect.top <= detectionOffset && rect.bottom > 0) || 
+        (scrollY >= sectionTop - detectionOffset && scrollY < sectionBottom - detectionOffset) ||
         (atBottom && i === sections.length - 1)
       ) {
         currentSectionId = sectionId;
@@ -84,20 +86,20 @@ export default function Navbar() {
       setActiveSection(currentSectionId);
     }
 
-    // Update scrolled state - use small threshold
-    const isScrolled = scrollY > 20;
+    // Update scrolled state with a larger threshold
+    const isScrolled = scrollY > 50; // Increased from 20 to 50
     setScrolled(isScrolled);
 
     // Blur and opacity with smoother transitions
     const maxBlur = 10;
-    const scrollThreshold = 150; // Reduced for faster transition
+    const scrollThreshold = 200; // Increased from 150 to 200 for smoother transition
     const newBlurAmount = Math.min(maxBlur, (scrollY / scrollThreshold) * maxBlur);
     setBlurAmount(newBlurAmount);
     
     const maxOpacity = 0.8;
     const newBgOpacity = Math.min(maxOpacity, (scrollY / scrollThreshold) * maxOpacity);
     setBgOpacity(newBgOpacity);
-  }, 50), [activeSection, getNavbarHeight]);
+  }, 100), [activeSection, getNavbarHeight]); // Increased throttle from 50 to 100ms
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll, { passive: true });
