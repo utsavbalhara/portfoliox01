@@ -184,7 +184,7 @@ export default function AboutSection() {
               </motion.p>
               
               <motion.p 
-                className="text-base font-light leading-relaxed text-foreground/80"
+                className="text-lg md:text-xl font-light leading-relaxed text-foreground/80"
                 variants={scrollFadeUp}
               >
                 When I'm not building the web, you'll find me at the gym, exploring new coffee shops, or getting lost in cinematic universes.

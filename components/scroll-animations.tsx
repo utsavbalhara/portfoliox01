@@ -48,8 +48,6 @@ export default function ScrollAnimations() {
     // Cleanup function to kill ScrollTrigger instances on component unmount
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill())
-      // Optionally kill GSAP tweens too if needed
-      // gsap.killTweensOf('.section-animate')
     }
   }, []) // Empty dependency array ensures this runs once on mount
 

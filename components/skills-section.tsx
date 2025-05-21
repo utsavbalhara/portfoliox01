@@ -52,10 +52,10 @@ export default function SkillsSection() {
   return (
     <section
       id="skills"
-      className="section-animate py-24 scroll-section section-padding relative overflow-hidden"
+      className="section-animate py-24 scroll-section section-padding relative"
     >
       {/* Background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-0 left-0 w-full h-full bg-grid-white/[0.02] bg-[length:50px_50px]" />
         {/* <div className="absolute top-[10%] right-[5%] w-72 h-72 bg-primary/5 rounded-full blur-[100px]" /> */}
         {/* <div className="absolute bottom-[15%] left-[10%] w-64 h-64 bg-secondary/5 rounded-full blur-[100px]" /> */}
