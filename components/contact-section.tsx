@@ -18,27 +18,27 @@ const scrollFadeUp = {
   }
 }
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      }
     }
   }
-}
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.6,
-      ease: [0.16, 1, 0.3, 1]
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        ease: [0.16, 1, 0.3, 1]
+      }
     }
   }
-}
 
 export default function ContactSection() {
   const { ref } = useInView({ triggerOnce: false, threshold: 0.1 })
@@ -94,10 +94,10 @@ export default function ContactSection() {
           >
             <Button
               asChild
-              className="fill-center-button group text-lg px-8 py-5 h-auto"
+              className="fill-center-button group text-base px-6 py-3 h-auto"
             >
               <a href="mailto:your.email@example.com">
-                <Mail className="mr-2 h-5 w-5" />
+                <Mail className="mr-2 h-4 w-4" />
                 Say Hello
               </a>
             </Button>
@@ -105,7 +105,7 @@ export default function ContactSection() {
 
           {/* Social links */}
           <motion.div 
-            className="flex flex-wrap justify-center gap-4 mb-8"
+            className="flex flex-wrap justify-center gap-3 mb-8"
             variants={itemVariants}
           >
             {socialLinks.map((link, index) => (
@@ -113,7 +113,7 @@ export default function ContactSection() {
                 key={index}
                 asChild
                 variant="ghost"
-                className="h-12 w-12 rounded-full border border-transparent hover:border-white transition-all duration-200 group"
+                className="h-10 w-10 rounded-full border border-transparent transition-all duration-150 ease-out group hover:border-white hover:text-white"
               >
                 <a 
                   href={link.url}
@@ -121,7 +121,7 @@ export default function ContactSection() {
                   rel="noopener noreferrer"
                   aria-label={link.name}
                 >
-                  <span className="flex items-center justify-center w-full h-full group-hover:text-white text-inherit">
+                  <span className="flex items-center justify-center w-full h-full text-inherit">
                     {link.icon}
                   </span>
                 </a>
