@@ -3,6 +3,7 @@
 import { motion, AnimatePresence, useScroll, useTransform, useInView } from "framer-motion"
 import { Sparkles } from "lucide-react"
 import React, { useState, useEffect, useRef } from "react"
+import { createPortal } from "react-dom"
 
 // Playlist data with songs from the user's actual playlist
 const playlistSongs = [
@@ -65,6 +66,44 @@ const journeyData: JourneyItem[] = [
   },
 ];
 
+// Define Interest Card type
+interface InterestCard {
+  id: string;
+  title: string;
+  icon: React.ReactNode;
+  link?: string;
+  stats?: string;
+  description?: string;
+}
+
+// Interest cards data
+const interestCards: InterestCard[] = [
+  {
+    id: "music",
+    title: "Music",
+    icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" /></svg>,
+    link: "https://music.apple.com/profile/yourusername",
+    description: "Find out what I am listening to!"
+  },
+  {
+    id: "movies",
+    title: "Movies",
+    icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" /></svg>,
+    link: "https://letterboxd.com/yourusername",
+  },
+  {
+    id: "fitness",
+    title: "Fitness",
+    icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>,
+    stats: "Bench: 225lbs • Squat: 315lbs • Deadlift: 405lbs",
+  },
+  {
+    id: "books",
+    title: "Reading",
+    icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>,
+  }
+];
+
 export default function AboutSection() {
   // Random song from playlist
   const [currentSong, setCurrentSong] = useState(playlistSongs[0]);
@@ -74,6 +113,11 @@ export default function AboutSection() {
   
   // Client-side only state
   const [isClient, setIsClient] = useState(false);
+  
+  // State for popup
+  const [popupContent, setPopupContent] = useState<InterestCard | null>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
+  const backdropRef = useRef<HTMLDivElement>(null);
   
   // Set up client-side only effects
   useEffect(() => {
@@ -102,6 +146,63 @@ export default function AboutSection() {
   const parallaxY = useTransform(scrollYProgress, [0, 1], [0, -50]);
   const parallaxOpacity = useTransform(scrollYProgress, [0, 0.3], [0, 1]);
 
+  // Scroll lock and focus trap for modal
+  useEffect(() => {
+    if (!popupContent) return;
+    // Scroll lock
+    document.body.style.overflow = 'hidden';
+    // Focus trap and Escape
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setPopupContent(null);
+      if (e.key === "Tab" && modalRef.current) {
+        const focusable = modalRef.current.querySelectorAll<HTMLElement>(
+          'a, button, textarea, input, select, [tabindex]:not([tabindex="-1"])'
+        );
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        } else if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        }
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    setTimeout(() => {
+      if (modalRef.current) {
+        const focusable = modalRef.current.querySelector<HTMLElement>('a, button, textarea, input, select, [tabindex]:not([tabindex="-1"])');
+        focusable?.focus();
+      }
+    }, 0);
+    return () => {
+      document.body.style.overflow = 'unset';
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [popupContent]);
+
+  // Modal animation variants (copied from projects-section)
+  const popupContentVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.07,
+        delayChildren: 0.15
+      }
+    }
+  };
+  const popupItemVariants = {
+    hidden: { opacity: 0, y: 15, filter: "blur(4px)" },
+    visible: {
+      opacity: 1,
+      y: 0,
+      filter: "blur(0px)",
+      transition: { duration: 0.35, ease: [0.16, 1, 0.3, 1] }
+    }
+  };
+
   return (
     <section 
       id="about" 
@@ -123,7 +224,7 @@ export default function AboutSection() {
         }}
       >
         <div className="max-w-5xl mx-auto space-y-20">
-          {/* Section heading - Enhanced animation */}
+          {/* Section heading */}
           <motion.div 
             className="text-center"
             initial="hidden"
@@ -152,49 +253,176 @@ export default function AboutSection() {
               className="h-[1px] w-32 bg-gradient-to-r from-transparent via-primary/30 to-transparent mx-auto mb-8"
               variants={scrollFadeUp}
             />
-            
-            {/* Minimal Personal Info */}
-            <motion.div 
-              className="flex flex-wrap justify-center items-center gap-2 text-sm text-muted-foreground mb-8"
-              variants={scrollFadeUp}
-            >
-              <span>Delhi, India</span>
-              <span className="mx-1.5 opacity-50">•</span>
-              <span>Full Stack Dev</span>
-              <span className="mx-1.5 opacity-50">•</span>
-              <span>INTJ-T</span>
-            </motion.div>
           </motion.div>
 
-          {/* Introduction - Bio only */}
-          <div className="grid grid-cols-1 gap-y-8">
-            {/* Bio content with typing animation */}
-            <motion.div 
-              className="space-y-6 max-w-2xl mx-auto text-center"
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.3 }}
-              variants={scrollFadeUp}
-            >
-              <motion.p 
-                className="text-lg md:text-xl font-light leading-relaxed text-foreground/90"
-                variants={scrollFadeUp}
-              >
-                I craft digital experiences that blend creativity with functionality. My approach combines clean code with intuitive design, turning complex problems into elegant solutions.
-              </motion.p>
-              
-              <motion.p 
-                className="text-lg md:text-xl font-light leading-relaxed text-foreground/80"
-                variants={scrollFadeUp}
-              >
-                When I'm not building the web, you'll find me at the gym, exploring new coffee shops, or getting lost in cinematic universes.
-              </motion.p>
-            </motion.div>
-          </div>
-        
-        
+          {/* Bio Section (moved above cards) */}
+          <motion.div 
+            className="space-y-6 max-w-3xl mx-auto text-center mb-16"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={scrollFadeUp}
+          >
+            <p className="text-lg md:text-xl font-light leading-relaxed text-foreground/90">
+              I craft digital experiences that blend creativity with functionality. My approach combines clean code with intuitive design, turning complex problems into elegant solutions.
+            </p>
+            <p className="text-lg md:text-xl font-light leading-relaxed text-foreground/80">
+              When I'm not building the web, you'll find me exploring new coffee shops, getting lost in cinematic universes, or pushing my limits at the gym.
+            </p>
+          </motion.div>
+
+          {/* Interest Cards Section (as rectangular grid) */}
+          <motion.div 
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-16"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={scrollFadeUp}
+          >
+            {interestCards.map((card, index) => {
+              const isClickable = ['movies', 'fitness', 'books'].includes(card.id);
+
+              const cardContent = (
+                <>
+                  <div className="p-3 rounded-lg bg-primary/10 text-primary mb-4 flex-shrink-0">
+                    {card.icon}
+                  </div>
+                  <div className="flex-grow">
+                    <h4 className="font-medium text-lg mb-1">{card.title}</h4>
+                    {card.id === 'music' && card.description && (
+                       <p className="text-sm text-muted-foreground mt-1">{card.description}</p>
+                    )}
+                    {card.id === 'fitness' && card.stats && !isClickable && ( // Only show stats on card if not clickable (i.e., not using popup yet)
+                       <p className="text-sm text-muted-foreground">{card.stats}</p>
+                    )}
+                    {card.id !== 'music' && !isClickable && card.description && ( // Only show description on card if not clickable
+                       <p className="text-sm text-muted-foreground mt-1">{card.description}</p>
+                    )}
+                  </div>
+                  {isClickable && (
+                    <span className="ml-2 text-muted-foreground opacity-70 group-hover:opacity-100 transition-opacity duration-200">
+                      {/* Placeholder for a subtle info/arrow icon */}
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </span>
+                  )}
+                </>
+              );
+
+              if (isClickable) {
+                return (
+                  <motion.div
+                    key={card.id}
+                    className="flex flex-col items-center text-center p-8 rounded-2xl bg-card/80 border border-border/30 backdrop-blur-md shadow-xl h-full cursor-pointer group relative"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    onClick={() => setPopupContent(card)}
+                  >
+                    <div className="absolute inset-0 border-[3px] border-white/0 transition-all duration-300 ease-out group-hover:border-white/40 rounded-2xl" />
+                    {cardContent}
+                  </motion.div>
+                );
+              } else {
+                return (
+                  <motion.a
+                    key={card.id}
+                    href={card.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex flex-col items-center text-center p-8 rounded-2xl bg-card/80 border border-border/30 backdrop-blur-md shadow-xl h-full group relative"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                  >
+                    <div className="absolute inset-0 border-[3px] border-white/0 transition-all duration-300 ease-out group-hover:border-white/40 rounded-2xl" />
+                    {cardContent}
+                  </motion.a>
+                );
+              }
+            })}
+          </motion.div>
+
         </div>
       </motion.div>
+
+      {/* Modal rendered in a portal, outside the blurred overlay */}
+      {createPortal(
+        <AnimatePresence>
+          {popupContent && (
+            <motion.div
+              className="fixed inset-0 z-[71] flex items-center justify-center p-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.18 }}
+              ref={backdropRef}
+              onClick={e => { if (backdropRef.current && e.target === backdropRef.current) setPopupContent(null); }}
+            >
+              {/* Overlay for modal (for fade-out on close) */}
+              <div className="absolute inset-0 bg-black/30 backdrop-blur-sm z-0" />
+              {/* Modal itself */}
+              <motion.div
+                ref={modalRef}
+                className="relative max-w-lg w-full p-0 md:p-0 rounded-2xl shadow-2xl border border-border bg-white dark:bg-black/95 text-foreground focus:outline-none ring-2 ring-primary/10 z-10"
+                tabIndex={-1}
+                initial={{ scale: 0.92, opacity: 0, boxShadow: '0 0 0 0 rgba(0,0,0,0)' }}
+                animate={{ scale: 1, opacity: 1, boxShadow: '0 8px 32px 0 rgba(0,0,0,0.25)' }}
+                exit={{ scale: 0.92, opacity: 0, boxShadow: '0 0 0 0 rgba(0,0,0,0)' }}
+                transition={{ type: 'spring', stiffness: 500, damping: 32, duration: 0.32 }}
+                onClick={e => e.stopPropagation()}
+              >
+                {/* Close button */}
+                <button 
+                  className="absolute top-4 right-4 text-muted-foreground hover:text-foreground"
+                  onClick={() => setPopupContent(null)}
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+                <div className="p-8">
+                  <motion.div variants={popupContentVariants} initial="hidden" animate="visible">
+                    <motion.h4 variants={popupItemVariants} className="text-3xl font-bold mb-1 gradient-text">{popupContent.title}</motion.h4>
+                    {popupContent.id === 'movies' && (
+                      <motion.div variants={popupItemVariants} className="prose prose-invert">
+                        <p>Your detailed movie/show list goes here. You can format this nicely with lists, links, etc.</p>
+                        <ul>
+                          <li>Movie 1</li>
+                          <li>Movie 2</li>
+                          <li>Show 1</li>
+                        </ul>
+                      </motion.div>
+                    )}
+                    {popupContent.id === 'fitness' && (
+                      <motion.div variants={popupItemVariants} className="prose prose-invert">
+                        <p className="text-lg font-light">Key Stats:</p>
+                        <p>{popupContent.stats}</p>
+                        <p className="mt-4 text-lg font-light">Routine & Philosophy:</p>
+                        <p>Details about your training split, favorite exercises, or approach to fitness.</p>
+                      </motion.div>
+                    )}
+                    {popupContent.id === 'books' && (
+                      <motion.div variants={popupItemVariants} className="prose prose-invert">
+                        <p className="text-lg font-light">Currently Reading:</p>
+                        <p>[Book Title] by [Author]</p>
+                        <p className="mt-4 text-lg font-light">Favorite Reads:</p>
+                        <ul>
+                          <li>Book A by Author X</li>
+                          <li>Book B by Author Y</li>
+                          <li>Book C by Author Z</li>
+                        </ul>
+                      </motion.div>
+                    )}
+                  </motion.div>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </section>
   );
 }

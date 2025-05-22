@@ -232,11 +232,10 @@ export default function ProjectsSection({ onVisibilityChange }: ProjectsSectionP
                       onClick={() => handleProjectClick(project.id)}
                       whileHover={{
                         scale: 1.02,
-                        backgroundColor: 'rgba(30,30,30,0.98)',
                       }}
                       transition={{ duration: 0.16, ease: 'easeOut' }}
                   >
-                    <div className="absolute inset-0 border-2 border-white/0 transition-all duration-300 ease-out group-hover:border-white/20 rounded-2xl" />
+                    <div className="absolute inset-0 border-[3px] border-white/0 transition-all duration-300 ease-out group-hover:border-white/40 rounded-2xl" />
                     <div className="flex flex-col">
                       <motion.span
                           className="font-display text-4xl md:text-5xl font-bold gradient-text transition-all duration-300 ease-out"
