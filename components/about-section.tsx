@@ -4,6 +4,7 @@ import { motion, AnimatePresence, useScroll, useTransform, useInView } from "fra
 import { Sparkles } from "lucide-react"
 import React, { useState, useEffect, useRef } from "react"
 import { createPortal } from "react-dom"
+import GithubContributionGrid from "@/components/GithubContributionGrid"
 
 // Playlist data with songs from the user's actual playlist
 const playlistSongs = [
@@ -95,7 +96,7 @@ const interestCards: InterestCard[] = [
     id: "fitness",
     title: "Fitness",
     icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>,
-    stats: "Bench: 225lbs • Squat: 315lbs • Deadlift: 405lbs",
+    stats: "Bench: 100kg • Squat: 130kg • Deadlift: 170kg",
   },
   {
     id: "books",
@@ -387,31 +388,48 @@ export default function AboutSection() {
                     <motion.h4 variants={popupItemVariants} className="text-3xl font-bold mb-1 gradient-text">{popupContent.title}</motion.h4>
                     {popupContent.id === 'movies' && (
                       <motion.div variants={popupItemVariants} className="prose prose-invert">
-                        <p>Your detailed movie/show list goes here. You can format this nicely with lists, links, etc.</p>
-                        <ul>
-                          <li>Movie 1</li>
-                          <li>Movie 2</li>
-                          <li>Show 1</li>
+                        <p className="font-bold mb-2">Best Movies I've Watched Recently:</p>
+                        <ul className="list-disc pl-5 space-y-1">
+                          <li>Rocky</li>
+                          <li>Parasite</li>
+                          <li>The Irishman</li>
+                          <li>Se7en</li>
+                          <li>Rush</li>
+                          <li>Prestige</li>
                         </ul>
                       </motion.div>
                     )}
                     {popupContent.id === 'fitness' && (
                       <motion.div variants={popupItemVariants} className="prose prose-invert">
-                        <p className="text-lg font-light">Key Stats:</p>
-                        <p>{popupContent.stats}</p>
-                        <p className="mt-4 text-lg font-light">Routine & Philosophy:</p>
-                        <p>Details about your training split, favorite exercises, or approach to fitness.</p>
+                        <p className="font-bold mb-2">Key Stats:</p>
+                        <ul className="list-disc pl-5 space-y-1 mb-4">
+                          <li><span className="font-semibold">Bench:</span> 100kg</li>
+                          <li><span className="font-semibold">Squat:</span> 130kg</li>
+                          <li><span className="font-semibold">Deadlift:</span> 170kg</li>
+                        </ul>
+                        <p className="font-bold mb-2">Workout Split:</p>
+                        <ul className="list-disc pl-5 space-y-1 mb-4">
+                          <li>Chest + Front Deltoids</li>
+                          <li>Back + Rear Deltoids</li>
+                          <li>Arms</li>
+                          <li>Legs</li>
+                          <li>Chest and Triceps</li>
+                          <li>Back and Biceps</li>
+                        </ul>
+                        <p className="text-base font-light">I follow a push/pull/legs-inspired split with extra focus on deltoids and arms, ensuring each muscle group gets optimal recovery and growth.</p>
                       </motion.div>
                     )}
                     {popupContent.id === 'books' && (
                       <motion.div variants={popupItemVariants} className="prose prose-invert">
-                        <p className="text-lg font-light">Currently Reading:</p>
-                        <p>[Book Title] by [Author]</p>
-                        <p className="mt-4 text-lg font-light">Favorite Reads:</p>
-                        <ul>
-                          <li>Book A by Author X</li>
-                          <li>Book B by Author Y</li>
-                          <li>Book C by Author Z</li>
+                        <p className="font-bold mb-2">Currently Reading:</p>
+                        <ul className="list-disc pl-5 space-y-1 mb-4">
+                          <li>Letters to Milena by Franz Kafka</li>
+                        </ul>
+                        <p className="font-bold mb-2">Favorite Reads:</p>
+                        <ul className="list-disc pl-5 space-y-1 mb-4">
+                          <li>Sapiens by Yuval Noah Harari</li>
+                          <li>White Nights by Fyodor Dostoevsky</li>
+                          <li>Catch 22 by Joseph Heller</li>
                         </ul>
                       </motion.div>
                     )}

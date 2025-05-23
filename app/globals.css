@@ -282,7 +282,7 @@
     border-radius: 0.75rem; /* rounded-xl */
     backdrop-filter: blur(6px); /* backdrop-blur-sm */
     border: 2px solid hsl(var(--border) / 0.7); /* border border-border/50 */
-    background-color: hsl(var(--card) / 0.9); /* bg-card/60 */
+    background-color: hsl(var(--card) / 0.6); /* bg-card/60 - changed from 0.9 to 0.7 for more transparency */
     color: hsl(var(--foreground));  /* text-foreground */
     box-shadow: 0 6px 8px -1px rgba(0, 0, 0, 0.15), 0 3px 5px -1px rgba(0, 0, 0, 0.1); /* shadow-md */
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); /* transition-all duration-300 */

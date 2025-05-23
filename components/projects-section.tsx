@@ -116,37 +116,35 @@ export default function ProjectsSection({ onVisibilityChange }: ProjectsSectionP
 
   const projects: Project[] = [
     {
-      id: "project-1",
-      title: "E-Commerce Platform",
-      description: "A full-featured online store with product catalog, shopping cart, and secure checkout process, designed for scalability and a seamless user experience.",
+      id: "nsutrack",
+      title: "NSUTrack",
+      description: "NSUT Trial is a modern Android application built with Jetpack Compose, designed to provide a seamless and intuitive user experience for NSUT (Netaji Subhas University of Technology) students. The app leverages the latest Android development technologies and follows Material Design 3 guidelines to deliver a beautiful and functional interface.",
       image: "/placeholder.svg?height=400&width=600",
-      tags: ["Next.js", "TypeScript", "Stripe", "Tailwind CSS", "Prisma"],
-      liveUrl: "#",
-      githubUrl: "#",
-      subtitle: "Online Retail Solution",
+      tags: ["Kotlin", "Jetpack Compose", "MVVM", "Retrofit", "GSON", "Navigation Compose", "Material 3", "Beautifulsoup", "Google Fonts", "Material Icons"],
+      liveUrl: "https://github.com/aryamanj250/NSUTrack/releases/tag/1.0.0-beta",
+      githubUrl: "https://github.com/aryamanj250/NSUTrack",
+      subtitle: "All-in-one NSUT Student App",
     },
     {
-      id: "project-2",
-      title: "Task Management App",
-      description:
-          "A productivity application for organizing tasks with drag-and-drop functionality, real-time team collaboration features, and personalized dashboards.",
+      id: "himyatra",
+      title: "HimYatra",
+      description: "A comprehensive tourism solution for Himachal Pradesh featuring a dual-platform system. The web-based HimYatra Companion provides hospitality providers with real-time booking management, occupancy tracking, and visitor analytics. Built with a focus on accessibility and ease of use for both established hotels and smaller homestays.",
       image: "/placeholder.svg?height=400&width=600",
-      tags: ["React", "Node.js", "MongoDB", "Socket.io", "Zustand"],
-      liveUrl: "#",
-      githubUrl: "#",
-      subtitle: "Collaborative Productivity",
+      tags: ["JavaScript", "Flask", "Swift", "Axios", "Node.js", "React"],
+      liveUrl: "https://devfolio.co/projects/himyatra-b3cb",
+      githubUrl: "https://github.com/aryamanj250/Tourist",
+      subtitle: "Himachal Tourism Platform",
     },
     {
-      id: "project-3",
-      title: "Weather Dashboard",
-      description:
-          "An interactive weather application providing real-time forecasts, historical weather data visualization, and severe weather alerts using modern charting libraries.",
+      id: "portfolio",
+      title: "Portfolio",
+      description: "A modern, responsive portfolio website showcasing my projects and skills. Built with a focus on performance, accessibility, and smooth animations. Features a clean, minimalist design with interactive elements and a seamless user experience.",
       image: "/placeholder.svg?height=400&width=600",
-      tags: ["React", "Chart.js", "OpenWeather API", "Styled Components", "Axios"],
-      liveUrl: "#",
-      githubUrl: "#",
-      subtitle: "Meteorological Insights",
-    },
+      tags: ["TypeScript", "Next.js", "React", "Tailwind CSS", "Framer Motion", "shadcn/ui"],
+      liveUrl: "",
+      githubUrl: "https://github.com/aryamanj250/portfolio",
+      subtitle: "Personal Portfolio Website",
+    }
   ];
 
   useEffect(() => {
@@ -252,21 +250,6 @@ export default function ProjectsSection({ onVisibilityChange }: ProjectsSectionP
                 </motion.li>
             ))}
           </motion.ul>
-
-          <motion.div
-              className="text-center mt-20"
-              variants={scrollFadeUp}
-          >
-            <Button
-                className="fill-center-button group"
-                asChild
-            >
-              <a href="#" className="flex items-center">
-                View All Projects
-                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </a>
-            </Button>
-          </motion.div>
         </motion.div>
       </motion.section>
       {/* Modal rendered in a portal, outside the blurred overlay */}
